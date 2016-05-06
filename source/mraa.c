@@ -22,8 +22,12 @@
  */
 
 #include <mraa.h>
+#include "mraa_internal_types.h"
 
-int mraa_init()
+struct _gpio _internalgpios[4];
+
+int
+mraa_init()
 {
     return 0;
 }

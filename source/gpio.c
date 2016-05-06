@@ -23,6 +23,7 @@
 
 #include <gpio.h>
 #include <mraa/gpio.h>
+#include "mraa_internal_types.h"
 
 #if defined(CONFIG_SOC_QUARK_D2000)
 #define GPIO_OUT_PIN    8
@@ -34,7 +35,11 @@
 #define GPIO_DRV_NAME CONFIG_GPIO_DW_0_NAME
 #elif defined(CONFIG_GPIO_QMSI_0)
 #define GPIO_DRV_NAME CONFIG_GPIO_QMSI_0_NAME
+#else
+#define GPIO_DRV_NAME CONFIG_GPIO_DW_0_NAME
 #endif
+
+struct _gpio _internalgpios[4];
 
 mraa_gpio_context
 mraa_gpio_init(int pin)
@@ -45,11 +50,12 @@ mraa_gpio_init(int pin)
 mraa_gpio_context
 mraa_gpio_init_raw(int gpiopin)
 {
-    mraa_gpio_context dev = malloc(sizeof(struct _gpio));
+    //mraa_gpio_context dev = malloc(sizeof(struct _gpio));
+    mraa_gpio_context dev = &_internalgpios[0];
     dev->phy_pin = gpiopin;
     dev->pin = gpiopin;
     dev->gpio_dev = device_get_binding(GPIO_DRV_NAME);
-    gpio_pin_configure(dev->gpio_dev, gpio->phy_pin, GPIO_DIR_OUT);
+    gpio_pin_configure(dev->gpio_dev, dev->phy_pin, GPIO_DIR_OUT);
     return dev;
 }
 
@@ -69,6 +75,7 @@ mraa_result_t
 mraa_gpio_write(mraa_gpio_context dev, int value)
 {
      gpio_pin_write(dev->gpio_dev, dev->phy_pin, 1);
+     return MRAA_SUCCESS;
 }
 
 mraa_result_t

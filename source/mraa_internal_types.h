@@ -30,6 +30,6 @@ struct _gpio {
     /*@{*/
     int pin; /**< the pin number, as known to the os. */
     int phy_pin; /**< pin passed to clean init. -1 none and raw*/
-    struct device* gpio;
+    struct device* gpio_dev;
     /*@}*/
 };
