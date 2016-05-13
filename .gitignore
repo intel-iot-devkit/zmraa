@@ -5,6 +5,7 @@
 *.lo
 *.la
 *.pyc
+*.o.cmd
 
 # Temp files
 *.swp
