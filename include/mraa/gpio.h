@@ -1,50 +1,39 @@
 /*
- * Copyright (c) 2016 Intel Corporation.
+ * Copyright (c) 2015, Intel Corporation. All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#ifndef __MRAA_GPIO_H__
+#define __MRAA_GPIO_H__
 
-/**
- * @file
- * @brief General Purpose IO
- *
- * Gpio is the General Purpose IO interface to libmraa. Its features depend on
- * the board type used, it can use gpiolibs (exported via a kernel module
- * through sysfs), or memory mapped IO via a /dev/uio device or /dev/mem
- * depending again on the board configuration.
- *
- * @snippet gpio_read6.c Interesting
- */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <stdio.h>
 #include "common.h"
+#include <stdbool.h>
 
-/**
- * Opaque pointer definition to the internal struct _gpio
- */
 typedef struct _gpio* mraa_gpio_context;
 
 /**
@@ -68,30 +57,59 @@ typedef enum {
 } mraa_gpio_dir_t;
 
 /**
- * Gpio Edge types for interrupts
+ * Gpio Edge types for interupts
  */
 typedef enum {
     MRAA_GPIO_EDGE_NONE = 0,   /**< No interrupt on Gpio */
-    MRAA_GPIO_EDGE_BOTH = 1,   /**< Interrupt on rising & falling */
-    MRAA_GPIO_EDGE_RISING = 2, /**< Interrupt on rising only */
-    MRAA_GPIO_EDGE_FALLING = 3 /**< Interrupt on falling only */
+    MRAA_GPIO_EDGE_BOTH = 1,   /**< Interupt on rising & falling */
+    MRAA_GPIO_EDGE_RISING = 2, /**< Interupt on rising only */
+    MRAA_GPIO_EDGE_FALLING = 3 /**< Interupt on falling only */
 } mraa_gpio_edge_t;
 
 /**
- * Initialise gpio_context, based on board number
+ * Initialise a gpio
  *
- *  @param pin Pin number read from the board, i.e IO3 is 3
- *  @returns gpio context or NULL
+ * @param pin the pin number
+ * @param ss whether gpio is on ARC/SS or not
+ */
+mraa_gpio_context mraa_gpio_init_raw(int pin);
+
+/**
+ * Initialise a gpio
+ *
+ * @param pin the pin number
  */
 mraa_gpio_context mraa_gpio_init(int pin);
 
 /**
- * Initialise gpio context without any mapping to a pin
+ * Set an interupt on pin
  *
- * @param gpiopin gpio pin as listed in SYSFS
- * @return gpio context or NULL
+ * @param dev The Gpio context
+ * @param edge The edge mode to set the gpio into
+ * @param fptr Function pointer to function to be called when interupt is
+ * triggered
+ * @param args Arguments passed to the interrupt handler (fptr)
+ * @return Result of operation
  */
-mraa_gpio_context mraa_gpio_init_raw(int gpiopin);
+mraa_result_t mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge, void (*fptr)(void*), void* args);
+
+/**
+ * Stop the current interupt watcher on this Gpio, and set the Gpio edge mode
+ * to MRAA_GPIO_EDGE_NONE
+ *
+ * @param dev The Gpio context
+ * @return Result of operation
+ */
+mraa_result_t mraa_gpio_isr_exit(mraa_gpio_context dev);
+
+/**
+ * Set Gpio Output Mode,
+ *
+ * @param dev The Gpio context
+ * @param mode The Gpio Output Mode
+ * @return Result of operation
+ */
+mraa_result_t mraa_gpio_mode(mraa_gpio_context dev, mraa_gpio_mode_t mode);
 
 /**
  * Set the edge mode on the gpio
@@ -103,6 +121,15 @@ mraa_gpio_context mraa_gpio_init_raw(int gpiopin);
 mraa_result_t mraa_gpio_edge_mode(mraa_gpio_context dev, mraa_gpio_edge_t mode);
 
 /**
+ * Close the Gpio context
+ * - Will free the memory for the context and unexport the Gpio
+ *
+ * @param dev The Gpio context
+ * @return Result of operation
+ */
+mraa_result_t mraa_gpio_close(mraa_gpio_context dev);
+
+/**
  * Set Gpio direction
  *
  * @param dev The Gpio context
@@ -112,22 +139,13 @@ mraa_result_t mraa_gpio_edge_mode(mraa_gpio_context dev, mraa_gpio_edge_t mode);
 mraa_result_t mraa_gpio_dir(mraa_gpio_context dev, mraa_gpio_dir_t dir);
 
 /**
- * Read Gpio direction
+ * Write to the Gpio Value.
  *
  * @param dev The Gpio context
- * @param dir The address where to store the Gpio direction
+ * @param value Integer value to write
  * @return Result of operation
  */
-mraa_result_t mraa_gpio_read_dir(mraa_gpio_context dev, mraa_gpio_dir_t *dir);
-
-/**
- * Close the Gpio context
- * - Will free the memory for the context and unexport the Gpio
- *
- * @param dev The Gpio context
- * @return Result of operation
- */
-mraa_result_t mraa_gpio_close(mraa_gpio_context dev);
+mraa_result_t mraa_gpio_write(mraa_gpio_context dev, int val);
 
 /**
  * Read the Gpio value. This can be 0 or 1. A resonse of -1 means that there
@@ -139,14 +157,21 @@ mraa_result_t mraa_gpio_close(mraa_gpio_context dev);
 int mraa_gpio_read(mraa_gpio_context dev);
 
 /**
- * Write to the Gpio Value.
+ * Get a pin number of the gpio, invalid will return -1
  *
  * @param dev The Gpio context
- * @param value Integer value to write
+ * @return Pin number
+ */
+int mraa_gpio_get_pin(mraa_gpio_context dev);
+
+/**
+ * Change ownership of the context.
+ *
+ * @param dev The Gpio context
+ * @param owner Does this context own the pin
  * @return Result of operation
  */
-mraa_result_t mraa_gpio_write(mraa_gpio_context dev, int value);
+mraa_result_t mraa_gpio_owner(mraa_gpio_context dev, mraa_boolean_t owner);
 
-#ifdef __cplusplus
-}
+
 #endif
