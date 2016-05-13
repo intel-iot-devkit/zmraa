@@ -2,11 +2,15 @@ ZMRAA is an implementation of the MRAA API for Zephyr project.
 
 Supported Devices
 -----------------
+* Arduino 101 (x86 core)
 
-* Quark D2000
+Supported APIs
+-----------------
+* GPIO
+
 
 Adding ZMRAA to Zephyr
-======================
+----------------------
 
 ```
 cd zephyr/libs
@@ -49,8 +53,13 @@ index 4c05169..1d514eb 100644
  config  KERNEL_BIN_NAME
 ```
 
-Then add mraa to your zephyr configuration and build your sample
+Build GPIO Example
+------------------
+Add mraa and gpio driver to your zephyr configuration and build sample
 ```
-cd zephyr/samples/hello_world/nanokernel
-make BOARD=quark_d2000_crb ARCH=x86 menuconfig
+source $ZEPHYR_BASE/zephyr-env.sh
+cd examples/mraa-gpio
+make BOARD=arduino_101 menuconfig
+make BOARD=arduino_101 
 ```
+
