@@ -13,7 +13,7 @@ Adding ZMRAA to Zephyr
 ----------------------
 
 ```
-cd zephyr/libs
+cd zephyr/lib
 git clone git@github.com:intel-iot-devkit/zmraa.git mraa
 ```
 
@@ -55,11 +55,18 @@ index 4c05169..1d514eb 100644
 
 Build GPIO Example
 ------------------
-Add mraa and gpio driver to your zephyr configuration and build sample
+Add mraa and gpio driver to your zephyr configuration and build sample.
+Device Drivers -> GPIO Drivers -> QMSI GPIO driver
+NRAA -> Mraa GPIO function support
+
 ```
 source $ZEPHYR_BASE/zephyr-env.sh
-cd examples/mraa-gpio
+cd lib/mraa/examples/mraa-gpio
 make BOARD=arduino_101 menuconfig
-make BOARD=arduino_101 
 ```
 
+Now build the sample.
+
+```
+make BOARD=arduino_101 
+```
