@@ -122,10 +122,10 @@ mraa_set_pininfo(int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_
 {
     mraa_pininfo_t* pin_info = &board.pins[mraa_pin];
     pin_info->gpio.pinmap = zephyr_pin;
-	pin_info->gpio.mux_total = 0;
+    pin_info->gpio.mux_total = 0;
     pin_info->name = name;
     pin_info->capabilites = caps;
-	return MRAA_SUCCESS;
+    return MRAA_SUCCESS;
 }
 
 
@@ -153,5 +153,5 @@ mraa_board_t* mraa_intel_arduino_101()
     mraa_set_pininfo(11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-	return &board;
+    return &board;
 }

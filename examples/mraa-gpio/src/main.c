@@ -1,6 +1,6 @@
 /*
- * Author: Brendan Le Foll <brendan.le.foll@intel.com>
- * Copyright (c) 2014 Intel Corporation.
+ * Author: Henry Bruce <henry.bruce@intel.com>
+ * Copyright (c) 2016 Intel Corporation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -32,7 +32,6 @@ struct gpio_source {
     int pin;
     mraa_gpio_context context;
 };
-
 
 void
 print_version()
@@ -121,7 +120,6 @@ gpio_get(int pin, int* level)
     return MRAA_ERROR_INVALID_RESOURCE;
 }
 
-
 void
 gpio_isr_handler(void* args)
 {
@@ -146,7 +144,6 @@ gpio_isr_start(struct gpio_source* gpio_info)
     }
 }
 
-
 mraa_result_t
 gpio_isr_stop(struct gpio_source* gpio_info)
 {
@@ -155,33 +152,38 @@ gpio_isr_stop(struct gpio_source* gpio_info)
     return MRAA_SUCCESS;
 }
 
-static void shell_cmd_help(int argc, char *argv[])
+static void
+shell_cmd_help(int argc, char* argv[])
 {
     print_help();
 }
 
-static void shell_cmd_version(int argc, char *argv[])
+static void
+shell_cmd_version(int argc, char* argv[])
 {
-	print_version();
+    print_version();
 }
 
-static void shell_cmd_list(int argc, char *argv[])
+static void
+shell_cmd_list(int argc, char* argv[])
 {
-	list_pins();
+    list_pins();
 }
 
-static void shell_cmd_set(int argc, char *argv[])
+static void
+shell_cmd_set(int argc, char* argv[])
 {
-	if (argc == 3) {
-	    int pin = atoi(argv[1]);
-	    if (gpio_set(pin, atoi(argv[2])) != MRAA_SUCCESS)
-        	printf("Could not set gpio %d\n", pin);
-	} else {
+    if (argc == 3) {
+        int pin = atoi(argv[1]);
+        if (gpio_set(pin, atoi(argv[2])) != MRAA_SUCCESS)
+            printf("Could not set gpio %d\n", pin);
+    } else {
         printf("Invalid command\n");
     }
 }
 
-static void shell_cmd_get(int argc, char *argv[])
+static void
+shell_cmd_get(int argc, char* argv[])
 {
     if (argc == 2) {
         int pin = atoi(argv[1]);
@@ -196,7 +198,8 @@ static void shell_cmd_get(int argc, char *argv[])
     }
 }
 
-static void shell_cmd_monitor(int argc, char *argv[])
+static void
+shell_cmd_monitor(int argc, char* argv[])
 {
     if (argc == 2) {
         // printf("shell_cmd_monitor\n");
@@ -217,7 +220,7 @@ static void shell_cmd_monitor(int argc, char *argv[])
 
 
 void
-main()
+main(void)
 {
 	const struct shell_cmd commands[] = {
         { "syntax", shell_cmd_help },
@@ -232,13 +235,12 @@ main()
     mraa_result_t status = mraa_init();
     if (status == MRAA_SUCCESS) {
         print_version();
-		shell_init("command> ", commands);
-	} else
-		printf("mraa_init() failed with error code %d\n", status);
+        shell_init("mraa> ", commands);
+    } else {
+        printf("mraa_init() failed with error code %d\n", status);
+    }
 
-
-
-/*
+#if 0
     if (argc == 1) {
         print_command_error();
     }
@@ -289,7 +291,5 @@ main()
             print_command_error();
         }
     }
-    return 0;
-*/
+#endif
 }
-

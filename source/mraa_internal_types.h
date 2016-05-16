@@ -50,7 +50,7 @@ typedef struct {
     mraa_boolean_t spi:1;       /**< Is the pin spi capable */
     mraa_boolean_t i2c:1;       /**< Is the pin i2c capable */
     mraa_boolean_t aio:1;       /**< Is the pin analog input capable */
-    mraa_boolean_t uart:1;       /**< Is the pin uart capable */
+    mraa_boolean_t uart:1;      /**< Is the pin uart capable */
     /*@}*/
 } mraa_pincapabilities_t;
 
