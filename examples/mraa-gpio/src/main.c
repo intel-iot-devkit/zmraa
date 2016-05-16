@@ -218,20 +218,17 @@ shell_cmd_monitor(int argc, char* argv[])
     }
 }
 
+const struct shell_cmd commands[] = { { "syntax", shell_cmd_help },
+                                      { "version", shell_cmd_version },
+                                      { "list", shell_cmd_list },
+                                      { "set", shell_cmd_set },
+                                      { "get", shell_cmd_get },
+                                      { "monitor", shell_cmd_monitor },
+                                      { NULL, NULL } };
 
 void
 main(void)
 {
-	const struct shell_cmd commands[] = {
-        { "syntax", shell_cmd_help },
-		{ "version", shell_cmd_version },
-		{ "list", shell_cmd_list },
-		{ "set", shell_cmd_set },
-        { "get", shell_cmd_get },
-        { "monitor", shell_cmd_monitor },
-		{ NULL, NULL }
-	};
-
     mraa_result_t status = mraa_init();
     if (status == MRAA_SUCCESS) {
         print_version();
