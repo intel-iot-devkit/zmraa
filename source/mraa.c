@@ -55,7 +55,7 @@ mraa_get_platform_name()
 const char*
 mraa_get_version()
 {
-    return "v0.01";
+    return "v0.0.2";
 }
 
 
