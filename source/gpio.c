@@ -31,6 +31,7 @@
 #include <string.h>
 #include <gpio.h>
 #include <misc/util.h>
+#include <pinmux.h>
 #include "mraa/gpio.h"
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
@@ -75,14 +76,28 @@ mraa_gpio_init(int pin)
         // syslog(LOG_ERR, "gpio: pin %i not capable of gpio", pin);
         return NULL;
     }
+#if 0
+    if (board->pins[pin].gpio.pinmux != -1) {
+	struct device* pinmux_dev = device_get_binding("pinmux");
+        printf("phew\n");
+	if (!pinmux_dev) {
+            printf("error\n");
+            return NULL;
+        }
+	if (pinmux_pin_set(pinmux_dev, board->pins[pin].gpio.pinmap, board->pins[pin].gpio.pinmux) != 0) {
+            printf("error2\n");
+            return NULL;
+	}
+    }
+#endif
     if (board->pins[pin].gpio.mux_total > 0) {
         if (mraa_setup_mux_mapped(board->pins[pin].gpio) != MRAA_SUCCESS) {
-            // syslog(LOG_ERR, "gpio: unable to setup muxes");
             return NULL;
         }
     }
     mraa_gpio_context dev = &_internalgpios[pin];
     mraa_gpio_context tmp = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
+
     memcpy(dev, tmp, sizeof(struct _gpio));
     return dev;
 }
