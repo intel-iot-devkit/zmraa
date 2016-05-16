@@ -26,6 +26,8 @@
 
 #if defined(CONFIG_BOARD_ARDUINO_101)
 #include "arduino_101.h"
+#elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
+#include "intel_d2k_crb.h"
 #endif
 
 
@@ -36,7 +38,9 @@ mraa_result_t
 mraa_init()
 {
 #if defined(CONFIG_BOARD_ARDUINO_101)
-	plat = mraa_intel_arduino_101();
+    plat = mraa_intel_arduino_101();
+#elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
+    plat = mraa_intel_d2k_crb();
 #endif
     return plat != NULL ? MRAA_SUCCESS : MRAA_ERROR_NO_RESOURCES;
 }

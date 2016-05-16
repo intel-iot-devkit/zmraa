@@ -25,6 +25,7 @@
 
 #include "mraa/common.h"
 #include "board_config.h"
+#include <pinmux.h>
 
 /**
  * A structure representing a gpio pin.
@@ -97,7 +98,7 @@ typedef struct {
     unsigned int mux_total; /** Numfer of muxes needed for operation of pin */
     mraa_mux_t mux[1]; /** Array holding information about mux */
     unsigned int output_enable; /** Output Enable GPIO, for level shifting */
-    // mraa_pin_cap_complex_t complex_cap;
+    int pinmux;
     /*@}*/
 } mraa_pin_t;
 
