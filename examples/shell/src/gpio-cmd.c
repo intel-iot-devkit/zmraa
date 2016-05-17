@@ -25,21 +25,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <misc/shell.h>
 #include "mraa/gpio.h"
 
-struct gpio_source {
-    int pin;
-    mraa_gpio_context context;
-};
 
-void
-print_version()
-{
-    printf("Version %s on %s\n", mraa_get_version(), mraa_get_platform_name());
-}
-
-void
+static void
 print_help()
 {
     printf("list              List pins\n");
@@ -49,14 +38,14 @@ print_help()
     printf("version           Get mraa version and board name\n");
 }
 
-void
+static void
 print_command_error()
 {
     printf("Invalid command, options are:\n");
     print_help();
 }
 
-int
+static int
 list_platform_pins(uint8_t platform_offset)
 {
     int pin_count = mraa_get_platform_pin_count(platform_offset);
@@ -85,7 +74,7 @@ list_platform_pins(uint8_t platform_offset)
     return pin_count;
 }
 
-int
+static int
 list_pins()
 {
     int pin_count = 0;
@@ -96,7 +85,7 @@ list_pins()
     return pin_count;
 }
 
-mraa_result_t
+static mraa_result_t
 gpio_set(int pin, int level)
 {
     mraa_gpio_context gpio = mraa_gpio_init(pin);
@@ -108,7 +97,7 @@ gpio_set(int pin, int level)
     return MRAA_ERROR_INVALID_RESOURCE;
 }
 
-mraa_result_t
+static mraa_result_t
 gpio_get(int pin, int* level)
 {
     mraa_gpio_context gpio = mraa_gpio_init(pin);
@@ -120,7 +109,7 @@ gpio_get(int pin, int* level)
     return MRAA_ERROR_INVALID_RESOURCE;
 }
 
-void
+static void
 gpio_isr_handler(void* args)
 {
     mraa_gpio_context dev = (mraa_gpio_context)args;
@@ -128,7 +117,7 @@ gpio_isr_handler(void* args)
     printf("Pin %d = %d\n", mraa_gpio_get_pin_raw(dev), level);
 }
 
-mraa_result_t
+static mraa_result_t
 gpio_isr_start(int pin)
 {
     mraa_gpio_context dev = mraa_gpio_init(pin);
@@ -143,7 +132,7 @@ gpio_isr_start(int pin)
     }
 }
 
-mraa_result_t
+static mraa_result_t
 gpio_isr_stop(int pin)
 {
     mraa_gpio_context dev = mraa_gpio_init(pin);
@@ -154,26 +143,20 @@ gpio_isr_stop(int pin)
     return MRAA_SUCCESS;
 }
 
-static void
-shell_cmd_help(int argc, char* argv[])
+void
+gpio_cmd_help(int argc, char* argv[])
 {
     print_help();
 }
 
-static void
-shell_cmd_version(int argc, char* argv[])
-{
-    print_version();
-}
-
-static void
-shell_cmd_list(int argc, char* argv[])
+void
+gpio_cmd_list(int argc, char* argv[])
 {
     list_pins();
 }
 
-static void
-shell_cmd_set(int argc, char* argv[])
+void
+gpio_cmd_set(int argc, char* argv[])
 {
     if (argc == 3) {
         int pin = atoi(argv[1]);
@@ -184,8 +167,8 @@ shell_cmd_set(int argc, char* argv[])
     }
 }
 
-static void
-shell_cmd_get(int argc, char* argv[])
+void
+gpio_cmd_get(int argc, char* argv[])
 {
     if (argc == 2) {
         int pin = atoi(argv[1]);
@@ -200,8 +183,8 @@ shell_cmd_get(int argc, char* argv[])
     }
 }
 
-static void
-shell_cmd_monitor(int argc, char* argv[])
+void
+gpio_cmd_monitor(int argc, char* argv[])
 {
     if (argc == 2) {
         int pin = atoi(argv[1]);
@@ -223,23 +206,3 @@ shell_cmd_monitor(int argc, char* argv[])
     }
 }
 
-const struct shell_cmd commands[] = { { "syntax", shell_cmd_help },
-                                      { "version", shell_cmd_version },
-                                      { "list", shell_cmd_list },
-                                      { "set", shell_cmd_set },
-                                      { "get", shell_cmd_get },
-                                      { "monitor", shell_cmd_monitor },
-                                      { NULL, NULL } };
-
-void
-main(void)
-{
-    mraa_result_t status = mraa_init();
-    if (status == MRAA_SUCCESS) {
-        print_version();
-
-        shell_init("mraa> ", commands);
-    } else {
-        printf("mraa_init() failed with error code %d\n", status);
-    }
-}
