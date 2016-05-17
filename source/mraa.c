@@ -21,6 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdio.h>
 #include <mraa.h>
 #include "mraa_internal_types.h"
 
@@ -39,6 +40,7 @@ mraa_init()
 {
 #if defined(CONFIG_BOARD_ARDUINO_101)
     plat = mraa_intel_arduino_101();
+    printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
     plat = mraa_intel_d2k_crb();
 #endif
