@@ -28,6 +28,7 @@
 #include <misc/printk.h>
 #define printf printk
 #endif
+#include <stdlib.h>
 #include <string.h>
 #include <gpio.h>
 #include <misc/util.h>
@@ -45,18 +46,31 @@
 #error GPIO driver not defined
 #endif
 
-static int callback_counter = 0;
+// TODO: Request container_of to be defined in a Zephyr OS include file
+#undef offsetof
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#define container_of(ptr, type, member) ({                      \
+        const __typeof__( ((type *)0)->member ) *__mptr = (ptr);    \
+        (type *)( (char *)__mptr - offsetof(type,member) );})
+
+
 static struct _gpio _internalgpios[CONFIG_MRAA_PIN_COUNT];
 static struct _gpio tmp_context;
 static int edge_flags = 0;
-static struct gpio_callback gpio_internal_callback;
 
+
+/*
+Use container_of macro to get gpio context as per advice from ivan.briano@intel.com on 5/13/16.
+henry.bruce: Callback function signatures usually include a "user data" parameter so callback can be given some context.
+             This is missing from gpio_callback_handler_t. Is this by design or an omission?
+ivan.briano: By design, use the callback_handler as a field in your struct and get it in the callback with container_of()
+*/
 static void gpio_internal_callback_func(struct device *port,
            struct gpio_callback *cb, uint32_t pins)
 {
-    callback_counter++;
-    // printf("gpio_callback trigger %d\n", callback_counter);
-    printf("gpio_callback triggered\n");
+    mraa_gpio_context dev = container_of(cb, struct _gpio, zcallback);
+    if (dev->isr != NULL)
+        dev->isr(dev->isr_args);
 }
 
 mraa_gpio_context
@@ -97,8 +111,8 @@ mraa_gpio_init(int pin)
     }
     mraa_gpio_context dev = &_internalgpios[pin];
     mraa_gpio_context tmp = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
-
     memcpy(dev, tmp, sizeof(struct _gpio));
+    dev->pin = pin;
     return dev;
 }
 
@@ -108,7 +122,6 @@ mraa_gpio_init_raw(int gpiopin)
     //mraa_gpio_context dev = malloc(sizeof(struct _gpio));
     mraa_gpio_context dev = &tmp_context;
     dev->phy_pin = gpiopin;
-    dev->pin = gpiopin;
     dev->zdev = device_get_binding(GPIO_DRV_NAME);
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, GPIO_DIR_OUT);
     if (ret) {
@@ -195,29 +208,37 @@ mraa_gpio_write(mraa_gpio_context dev, int value)
 
 
 mraa_result_t
-mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge, void (*fptr)(void*), void* args)
+mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(void*), void* args)
 {
-    printf("mraa_gpio_isr %x %d\n", dev->zdev, dev->phy_pin);
+    if (MRAA_SUCCESS != mraa_gpio_edge_mode(dev, edge_mode)) {
+        return MRAA_ERROR_UNSPECIFIED;
+    }
     int flags = GPIO_DIR_IN | GPIO_INT | GPIO_INT_DEBOUNCE | edge_flags;
+    // printf("isr addr = %x, args = %x\n", fptr, args);
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, flags);
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;
     }
-    printf("gpio_pin_configure ok\n");
-    gpio_init_callback(&gpio_internal_callback, gpio_internal_callback_func, BIT(dev->phy_pin));
-    printf("gpio_init_callback ok\n");
-    ret = gpio_add_callback(dev->zdev, &gpio_internal_callback);
+    dev->isr = fptr;
+    dev->isr_args = args;
+    gpio_init_callback(&(dev->zcallback), gpio_internal_callback_func, BIT(dev->phy_pin));
+    ret = gpio_add_callback(dev->zdev, &(dev->zcallback));
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;
     }
-    printf("gpio_add_callback ok\n");
     ret = gpio_pin_enable_callback(dev->zdev, dev->phy_pin);
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;
     }
-    printf("gpio_pin_enable_callback ok\n");
     return MRAA_SUCCESS;
 }
+
+mraa_result_t
+mraa_gpio_isr_exit(mraa_gpio_context dev)
+{
+    return gpio_pin_disable_callback(dev->zdev, dev->phy_pin) ? MRAA_ERROR_UNSPECIFIED : MRAA_SUCCESS;
+}
+
 
 mraa_result_t
 mraa_gpio_owner(mraa_gpio_context dev, mraa_boolean_t own)
@@ -235,6 +256,23 @@ mraa_gpio_mode(mraa_gpio_context dev, mraa_gpio_mode_t mode)
     return MRAA_SUCCESS;
 }
 
+int
+mraa_gpio_get_pin(mraa_gpio_context dev)
+{
+    if (dev == NULL) {
+        return -1;
+    }
+    return dev->phy_pin;
+}
+
+int
+mraa_gpio_get_pin_raw(mraa_gpio_context dev)
+{
+    if (dev == NULL) {
+        return -1;
+    }
+    return dev->pin;
+}
 
 mraa_result_t
 mraa_gpio_close(mraa_gpio_context dev)

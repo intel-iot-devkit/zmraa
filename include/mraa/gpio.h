@@ -114,6 +114,7 @@ mraa_result_t mraa_gpio_mode(mraa_gpio_context dev, mraa_gpio_mode_t mode);
 /**
  * Set the edge mode on the gpio
  *
+#include "mraa/common.h"
  * @param dev The Gpio context
  * @param mode The edge mode to set the gpio into
  * @return Result of operation
@@ -172,6 +173,22 @@ int mraa_gpio_get_pin(mraa_gpio_context dev);
  * @return Result of operation
  */
 mraa_result_t mraa_gpio_owner(mraa_gpio_context dev, mraa_boolean_t owner);
+
+/**
+ * Get a pin number of the gpio, invalid will return -1
+ *
+ * @param dev The Gpio context
+ * @return Pin number
+ */
+int mraa_gpio_get_pin(mraa_gpio_context dev);
+
+/**
+ * Get a gpio number as used within sysfs, invalid will return -1
+ *
+ * @param dev The Gpio context
+ * @return gpio number
+ */
+int mraa_gpio_get_pin_raw(mraa_gpio_context dev);
 
 
 #endif
