@@ -110,10 +110,11 @@ mraa_gpio_init(int pin)
 mraa_gpio_context
 mraa_gpio_init_raw(int gpiopin)
 {
-    //mraa_gpio_context dev = malloc(sizeof(struct _gpio));
     mraa_gpio_context dev = &tmp_context;
     dev->phy_pin = gpiopin;
     dev->zdev = device_get_binding(GPIO_DRV_NAME);
+    if (dev->zdev == NULL)
+        return NULL;
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, GPIO_DIR_OUT);
     if (ret) {
         printf("Error %d configuring %s pin %d\n", ret, GPIO_DRV_NAME, dev->phy_pin);
