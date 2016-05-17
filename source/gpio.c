@@ -46,14 +46,6 @@
 #error GPIO driver not defined
 #endif
 
-// TODO: Request container_of to be defined in a Zephyr OS include file
-#undef offsetof
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#define container_of(ptr, type, member) ({                      \
-        const __typeof__( ((type *)0)->member ) *__mptr = (ptr);    \
-        (type *)( (char *)__mptr - offsetof(type,member) );})
-
-
 static struct _gpio _internalgpios[CONFIG_MRAA_PIN_COUNT];
 static struct _gpio tmp_context;
 static int edge_flags = 0;
@@ -65,10 +57,9 @@ henry.bruce: Callback function signatures usually include a "user data" paramete
              This is missing from gpio_callback_handler_t. Is this by design or an omission?
 ivan.briano: By design, use the callback_handler as a field in your struct and get it in the callback with container_of()
 */
-static void gpio_internal_callback_func(struct device *port,
-           struct gpio_callback *cb, uint32_t pins)
+static void gpio_internal_callback(struct device *port, struct gpio_callback *cb, uint32_t pins)
 {
-    mraa_gpio_context dev = container_of(cb, struct _gpio, zcallback);
+    mraa_gpio_context dev = CONTAINER_OF(cb, struct _gpio, zcallback);
     if (dev->isr != NULL)
         dev->isr(dev->isr_args);
 }
@@ -221,7 +212,7 @@ mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(vo
     }
     dev->isr = fptr;
     dev->isr_args = args;
-    gpio_init_callback(&(dev->zcallback), gpio_internal_callback_func, BIT(dev->phy_pin));
+    gpio_init_callback(&(dev->zcallback), gpio_internal_callback, BIT(dev->phy_pin));
     ret = gpio_add_callback(dev->zdev, &(dev->zcallback));
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;
