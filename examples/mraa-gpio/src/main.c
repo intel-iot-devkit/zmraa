@@ -45,7 +45,7 @@ print_help()
     printf("list              List pins\n");
     printf("set pin level     Set pin to level (0/1)\n");
     printf("get pin           Get pin level\n");
-    printf("monitor pin       Monitor pin level changes\n");
+    printf("monitor pin [off] Monitor pin level changes\n");
     printf("version           Get mraa version and board name\n");
 }
 
@@ -123,20 +123,19 @@ gpio_get(int pin, int* level)
 void
 gpio_isr_handler(void* args)
 {
-    struct gpio_source* gpio_info = (struct gpio_source*) args;
-    int level = mraa_gpio_read(gpio_info->context);
-    printf("Pin %d = %d\n", gpio_info->pin, level);
+    mraa_gpio_context dev = (mraa_gpio_context)args;
+    int level = mraa_gpio_read(dev);
+    printf("Pin %d = %d\n", mraa_gpio_get_pin_raw(dev), level);
 }
 
 mraa_result_t
-gpio_isr_start(struct gpio_source* gpio_info)
+gpio_isr_start(int pin)
 {
-    // printf("gpio_isr_start\n");
-    gpio_info->context = mraa_gpio_init(gpio_info->pin);
-    if (gpio_info->context != NULL) {
-        mraa_result_t status = mraa_gpio_dir(gpio_info->context, MRAA_GPIO_IN);
+    mraa_gpio_context dev = mraa_gpio_init(pin);
+    if (dev != NULL) {
+        mraa_result_t status = mraa_gpio_dir(dev, MRAA_GPIO_IN);
         if (status == MRAA_SUCCESS) {
-            status = mraa_gpio_isr(gpio_info->context, MRAA_GPIO_EDGE_BOTH, &gpio_isr_handler, gpio_info);
+            status = mraa_gpio_isr(dev, MRAA_GPIO_EDGE_BOTH, &gpio_isr_handler, dev);
         }
         return status;
     } else {
@@ -145,10 +144,13 @@ gpio_isr_start(struct gpio_source* gpio_info)
 }
 
 mraa_result_t
-gpio_isr_stop(struct gpio_source* gpio_info)
+gpio_isr_stop(int pin)
 {
-    mraa_gpio_isr_exit(gpio_info->context);
-    mraa_gpio_close(gpio_info->context);
+    mraa_gpio_context dev = mraa_gpio_init(pin);
+    if (dev != NULL) {
+        mraa_gpio_isr_exit(dev);
+        mraa_gpio_close(dev);
+    }
     return MRAA_SUCCESS;
 }
 
@@ -202,16 +204,19 @@ static void
 shell_cmd_monitor(int argc, char* argv[])
 {
     if (argc == 2) {
-        // printf("shell_cmd_monitor\n");
         int pin = atoi(argv[1]);
-        struct gpio_source gpio_info;
-        gpio_info.pin = pin;
-        if (gpio_isr_start(&gpio_info) == MRAA_SUCCESS) {
+        if (gpio_isr_start(pin) == MRAA_SUCCESS) {
             printf("Monitoring level changes to pin %d\n", pin);
-            gpio_isr_handler(&gpio_info);
-            // gpio_isr_stop(&gpio_info);
+            // gpio_isr_handler(mraa_gpio_init(pin));
         } else {
             printf("Failed to register ISR for pin %d\n", pin);
+        }
+    } else if (argc == 3) {
+        int pin = atoi(argv[1]);
+        if (gpio_isr_stop(pin) == MRAA_SUCCESS) {
+            printf("Stopped monitoring level changes to pin %d\n", pin);
+        } else {
+            printf("Failed to deregister ISR for pin %d\n", pin);
         }
     } else {
         printf("Invalid command\n");
@@ -232,61 +237,9 @@ main(void)
     mraa_result_t status = mraa_init();
     if (status == MRAA_SUCCESS) {
         print_version();
+
         shell_init("mraa> ", commands);
     } else {
         printf("mraa_init() failed with error code %d\n", status);
     }
-
-#if 0
-    if (argc == 1) {
-        print_command_error();
-    }
-
-    if (argc > 1) {
-        if (strcmp(argv[1], "list") == 0) {
-            list_pins();
-        } else if (strcmp(argv[1], "help") == 0) {
-            print_help();
-        } else if (strcmp(argv[1], "version") == 0) {
-            print_version();
-        } else if ((strcmp(argv[1], "set") == 0)) {
-            if (argc == 4) {
-                int pin = atoi(argv[2]);
-                if (gpio_set(pin, atoi(argv[3])) != MRAA_SUCCESS)
-                    printf("Could not initialize gpio %d\n", pin);
-            } else {
-                print_command_error();
-            }
-        } else if ((strcmp(argv[1], "get") == 0)) {
-            if (argc == 3) {
-                int pin = atoi(argv[2]);
-                int level;
-                if (gpio_get(pin, &level) == MRAA_SUCCESS) {
-                    printf("Pin %d = %d\n", pin, level);
-                } else {
-                    printf("Could not initialize gpio %d\n", pin);
-                }
-            } else {
-                print_command_error();
-            }
-        } else if (strcmp(argv[1], "monitor") == 0) {
-            if (argc == 3) {
-                int pin = atoi(argv[2]);
-                struct gpio_source gpio_info;
-                gpio_info.pin = pin;
-                if (gpio_isr_start(&gpio_info) == MRAA_SUCCESS) {
-                    printf("Monitoring level changes to pin %d. Press RETURN to exit.\n", pin);
-                    gpio_isr_handler(&gpio_info);
-                    // gpio_isr_stop(&gpio_info);
-                } else {
-                    printf("Failed to register ISR for pin %d\n", pin);
-                }
-            } else {
-                print_command_error();
-            }
-        } else {
-            print_command_error();
-        }
-    }
-#endif
 }
