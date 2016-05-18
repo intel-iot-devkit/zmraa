@@ -54,12 +54,6 @@ extern "C" {
 #endif
 
 /**
- * MRAA boolean type
- * 1 For TRUE
- */
-typedef unsigned int mraa_boolean_t;
-
-/**
  * Initialise MRAA
  *
  * Detects running platform and attempts to use included pinmap, this is run on

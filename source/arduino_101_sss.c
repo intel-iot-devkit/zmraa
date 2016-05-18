@@ -130,10 +130,10 @@ mraa_set_pininfo(int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_
 }
 
 
-mraa_board_t* mraa_intel_arduino_101()
+mraa_board_t* mraa_intel_arduino_101_sss()
 {
     memset(&board, 0, sizeof(mraa_board_t));
-    board.platform_name = "Arduino 101 x86";
+    board.platform_name = "Arduino 101 ARC";
     board.platform_type = MRAA_INTEL_ARDUINO_101;
     board.phy_pin_count = CONFIG_MRAA_PIN_COUNT;
     board.gpio_count = CONFIG_MRAA_GPIO_COUNT;

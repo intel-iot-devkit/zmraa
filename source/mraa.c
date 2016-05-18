@@ -27,6 +27,8 @@
 
 #if defined(CONFIG_BOARD_ARDUINO_101)
 #include "arduino_101.h"
+#elif defined(CONFIG_BOARD_ARDUINO_101_SSS)
+#include "arduino_101_sss.h"
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
 #include "intel_d2k_crb.h"
 #endif
@@ -40,6 +42,9 @@ mraa_init()
 {
 #if defined(CONFIG_BOARD_ARDUINO_101)
     plat = mraa_intel_arduino_101();
+    printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
+#elif defined(CONFIG_BOARD_ARDUINO_101_SSS)
+    plat = mraa_intel_arduino_101_sss();
     printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
     plat = mraa_intel_d2k_crb();

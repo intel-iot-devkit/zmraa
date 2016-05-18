@@ -39,6 +39,12 @@ extern "C" {
 #endif
 
 /**
+ * MRAA boolean type
+ * 1 For TRUE
+ */
+typedef uint8_t mraa_boolean_t;
+
+/**
  * MRAA supported platform types
  */
 typedef enum {

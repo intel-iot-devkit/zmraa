@@ -24,6 +24,7 @@
 #pragma once
 
 #include <gpio.h>
+#include <i2c.h>
 #include <pinmux.h>
 #include "mraa/common.h"
 #include "board_config.h"
@@ -43,6 +44,20 @@ struct _gpio {
     void (* isr)(void *); /**< the interupt service request */
     void *isr_args; /**< args return when interupt service request triggered */
 
+    /*@}*/
+};
+
+
+/**
+ * A structure representing a I2C bus
+ */
+struct _i2c {
+    /*@{*/
+    int8_t busnum; /**< the bus number of the /dev/i2c-* device */
+    uint8_t addr; /**< the address of the i2c slave */
+    void *handle; /**< generic handle for non-standard drivers that don't use file descriptors  */
+    struct device* zdev;
+    union dev_config zcfg;
     /*@}*/
 };
 
