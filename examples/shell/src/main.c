@@ -28,6 +28,7 @@
 #include <misc/shell.h>
 #include "mraa/common.h"
 #include "gpio-cmd.h"
+#include "i2c-cmd.h"
 
 
 void
@@ -45,7 +46,6 @@ shell_cmd_version(int argc, char* argv[])
 static void
 shell_cmd_gpio(int argc, char* argv[])
 {
-printf("argc = %d\n", argc);
     argc--;
     for (int i = 0; i < argc; ++i)
         argv[i] = argv[i+1];
@@ -71,7 +71,7 @@ printf("argc = %d\n", argc);
 static void
 shell_cmd_i2c(int argc, char* argv[])
 {
-    printf("i2c commands not yet implemented\n");
+    i2c_process_command(argc, argv);
 }
 
 
