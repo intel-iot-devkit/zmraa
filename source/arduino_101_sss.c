@@ -110,7 +110,8 @@
  * 3. IO5/PWM1 is connected to pin 49 and 64.
  */
 
-
+#include <stdio.h>
+#include <pinmux.h>
 #include <mraa.h>
 #include <string.h>
 #include "mraa_internal_types.h"
@@ -133,7 +134,7 @@ mraa_set_pininfo(int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_
 mraa_board_t* mraa_intel_arduino_101_sss()
 {
     memset(&board, 0, sizeof(mraa_board_t));
-    board.platform_name = "Arduino 101 ARC";
+    board.platform_name = "Arduino 101 SSS";
     board.platform_type = MRAA_INTEL_ARDUINO_101;
     board.phy_pin_count = CONFIG_MRAA_PIN_COUNT;
     board.gpio_count = CONFIG_MRAA_GPIO_COUNT;
@@ -170,5 +171,21 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     board.i2c_bus[0].sda = 18;
     board.i2c_bus[0].scl = 19;
 
+// #if defined(CONFIG_PINMUX_DEV_NAME)
+#if 0
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for %s\n", CONFIG_PINMUX_DEV_NAME);
+        return NULL;
+    }
+    if (pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_B)) {
+        printf("Failed to set pinmux for %d\n", 9);
+        return NULL;
+    }
+    if (pinmux_pin_set(pinmux_dev, 14, PINMUX_FUNC_B)) {
+        printf("Failed to set pinmux for %d\n", 14);
+        return NULL;
+    }
+#endif
     return &board;
 }
