@@ -49,7 +49,7 @@ mraa_i2c_init(int bus)
     if (tmp == NULL)
     	return NULL;
     memcpy(dev, tmp, sizeof(struct _i2c));
-    printf("mraa_i2c_init(%d) done\n", bus);
+    // printf("mraa_i2c_init(%d) done\n", bus);
     return dev;
 }
 
@@ -72,7 +72,7 @@ mraa_i2c_init_raw(unsigned int bus)
 	dev->zcfg.bits.is_master_device = 1;
 	if (i2c_configure(dev->zdev, dev->zcfg.raw) != 0)
 		return NULL;
-    printf("mraa_i2c_init_raw(%d) done\n", bus);
+    // printf("mraa_i2c_init_raw(%d) done\n", bus);
     return dev;
 }
 
