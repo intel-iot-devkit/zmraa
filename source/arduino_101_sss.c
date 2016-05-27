@@ -159,17 +159,24 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     mraa_set_pininfo(11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(14,  0, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(15,  0, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(16,  0, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(17,  0, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(18,  0, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    mraa_set_pininfo(19,  0, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    mraa_set_pininfo(14, 10, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(15, 11, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(16, 12, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(17, 13, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(18, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    mraa_set_pininfo(19,  9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
 
     board.pins[18].i2c.mux_total = 0;
     board.pins[19].i2c.mux_total = 0;
     board.i2c_bus[0].sda = 18;
     board.i2c_bus[0].scl = 19;
+
+/*
+    mraa_gpio_context gpio_sda = mraa_gpio_init_raw(14);
+    mraa_gpio_context gpio_scl = mraa_gpio_init_raw(9);
+    mraa_gpio_dir(gpio_sda, MRAA_GPIO_IN);
+    mraa_gpio_dir(gpio_scl, MRAA_GPIO_IN);
+*/
 
 // #if defined(CONFIG_PINMUX_DEV_NAME)
 #if 0

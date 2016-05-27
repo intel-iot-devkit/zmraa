@@ -141,8 +141,8 @@ mraa_board_t* mraa_intel_arduino_101()
     board.i2c_bus_count = CONFIG_MRAA_I2C_COUNT;
     board.spi_bus_count = CONFIG_MRAA_SPI_COUNT;
     board.uart_dev_count= CONFIG_MRAA_UART_COUNT;
-    board.def_i2c_bus = 0;
-    board.i2c_bus[0].bus_id = 0;
+    board.def_i2c_bus = -1;
+    // board.i2c_bus[0].bus_id = 0;
 
     mraa_set_pininfo( 0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo( 1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
@@ -164,11 +164,6 @@ mraa_board_t* mraa_intel_arduino_101()
     mraa_set_pininfo(17,  0, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(18,  0, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
     mraa_set_pininfo(19,  0, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-
-    board.pins[18].i2c.mux_total = 0;
-    board.pins[19].i2c.mux_total = 0;
-    board.i2c_bus[0].sda = 18;
-    board.i2c_bus[0].scl = 19;
 
     return &board;
 }
