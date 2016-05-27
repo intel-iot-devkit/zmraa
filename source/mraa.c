@@ -22,7 +22,9 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <mraa.h>
+#include "board_config.h"
 #include "mraa_internal_types.h"
 
 #if defined(CONFIG_BOARD_ARDUINO_101)
@@ -31,6 +33,8 @@
 #include "arduino_101_sss.h"
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
 #include "intel_d2k_crb.h"
+#elif
+#error Board not defined
 #endif
 
 
@@ -374,4 +378,30 @@ int
 mraa_get_sub_platform_index(int pin_or_bus)
 {
     return -1;
+}
+
+
+// Internal functions
+mraa_result_t
+mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps)
+{
+    mraa_pininfo_t* pin_info = &board->pins[mraa_pin];
+    pin_info->gpio.pinmap = zephyr_pin;
+    pin_info->gpio.mux_total = 0;
+    pin_info->name = name;
+    pin_info->capabilites = caps;
+    return MRAA_SUCCESS;
+}
+
+
+void
+mraa_set_board_config(mraa_board_t* board)
+{
+    memset(board, 0, sizeof(mraa_board_t));
+    board->phy_pin_count = CONFIG_MRAA_PIN_COUNT;
+    board->gpio_count = CONFIG_MRAA_GPIO_COUNT;
+    board->aio_count = CONFIG_MRAA_AIO_COUNT;
+    board->i2c_bus_count = CONFIG_MRAA_I2C_COUNT;
+    board->spi_bus_count = CONFIG_MRAA_SPI_COUNT;
+    board->uart_dev_count= CONFIG_MRAA_UART_COUNT;
 }

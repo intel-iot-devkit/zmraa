@@ -41,6 +41,10 @@ extern mraa_board_t* plat;
  */
 mraa_result_t mraa_setup_mux_mapped(mraa_pin_t meta);
 
+mraa_result_t mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps);
+
+void mraa_set_board_config(mraa_board_t* board);
+
 
 #ifdef __cplusplus
 }

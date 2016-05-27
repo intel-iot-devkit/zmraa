@@ -49,9 +49,10 @@ typedef uint8_t mraa_boolean_t;
  */
 typedef enum {
     MRAA_INTEL_ARDUINO_101 = 200,    /**< Arduino 101 */
-    MRAA_INTEL_D2000_CRB = 201,      /**< Quark D2K CRB */
+    MRAA_INTEL_ARDUINO_101_SSS = 201,    /**< Arduino 101 */
+    MRAA_INTEL_D2000_CRB = 202,      /**< Quark D2K CRB */
     MRAA_UNKNOWN_PLATFORM =
-    99 /**< An unknown platform type, typically will load INTEL_GALILEO_GEN1 */
+   299 /**< An unknown platform type, typically will load INTEL_GALILEO_GEN1 */
 } mraa_platform_t;
 
 

@@ -67,62 +67,41 @@
 
 /******** End PINMUX mapping **************************/
 
-#include <string.h>
-#include <mraa.h>
-#include "mraa_internal_types.h"
-#include "board_config.h"
+#include "mraa_internal.h"
 
-static mraa_board_t board;
-
-static mraa_result_t
-mraa_set_pininfo(int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps)
-{
-    mraa_pininfo_t* pin_info = &board.pins[mraa_pin];
-    pin_info->gpio.pinmap = zephyr_pin;
-    pin_info->gpio.pinmux = PINMUX_FUNC_A;
-    pin_info->gpio.mux_total = 0;
-    pin_info->name = name;
-    pin_info->capabilites = caps;
-    return MRAA_SUCCESS;
-}
-
+static mraa_board_t _board;
 
 mraa_board_t* mraa_intel_d2k_crb()
 {
-    memset(&board, 0, sizeof(mraa_board_t));
-    board.platform_name = "Intel D2000 CRB";
-    board.platform_type = MRAA_INTEL_D2000_CRB;
-    board.phy_pin_count = CONFIG_MRAA_PIN_COUNT;
-    board.gpio_count = CONFIG_MRAA_GPIO_COUNT;
-    board.aio_count = CONFIG_MRAA_AIO_COUNT;
-    board.i2c_bus_count = CONFIG_MRAA_I2C_COUNT;
-    board.spi_bus_count = CONFIG_MRAA_SPI_COUNT;
-    board.uart_dev_count= CONFIG_MRAA_UART_COUNT;
-    board.def_i2c_bus = 0;
-    board.i2c_bus[0].bus_id = 0;
-    mraa_set_pininfo( 0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 2, 18, "IO2",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 3, 17, "IO3",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 4, 19, "IO4",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 5, 15, "IO5",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 6,  0, "IO6",  (mraa_pincapabilities_t){ 0, 0, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 7, 20, "IO7",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 8, 16, "IO8",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo( 9, 16, "IO9",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(13, 16, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(14, 10, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(15, 11, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(16, 12, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(17, 13, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(18, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    mraa_set_pininfo(19,  9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    board.pins[18].i2c.mux_total = 0;
-    board.pins[19].i2c.mux_total = 0;
-    board.i2c_bus[0].sda = 18;
-    board.i2c_bus[0].scl = 19;
-    return &board;
+    mraa_board_t* b = &_board;
+    mraa_set_board_config(b);
+    b->platform_name = "Intel D2000 CRB";
+    b->platform_type = MRAA_INTEL_D2000_CRB;
+    mraa_set_pininfo(b,  0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  2, 18, "IO2",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  3, 17, "IO3",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  4, 19, "IO4",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  5, 15, "IO5",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  6,  0, "IO6",  (mraa_pincapabilities_t){ 0, 0, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  7, 20, "IO7",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  8, 16, "IO8",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  9, 16, "IO9",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 13, 16, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 14, 10, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 15, 11, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 16, 12, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 17, 13, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 18, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    mraa_set_pininfo(b, 19,  9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    b->def_i2c_bus = 0;
+    b->i2c_bus[0].bus_id = 0;
+    b->pins[18].i2c.mux_total = 0;
+    b->pins[19].i2c.mux_total = 0;
+    b->i2c_bus[0].sda = 18;
+    b->i2c_bus[0].scl = 19;
+    return b;
 }
