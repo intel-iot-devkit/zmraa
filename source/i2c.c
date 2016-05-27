@@ -49,7 +49,6 @@ mraa_i2c_init(int bus)
     if (tmp == NULL)
     	return NULL;
     memcpy(dev, tmp, sizeof(struct _i2c));
-    // printf("mraa_i2c_init(%d) done\n", bus);
     return dev;
 }
 
@@ -72,7 +71,6 @@ mraa_i2c_init_raw(unsigned int bus)
 	dev->zcfg.bits.is_master_device = 1;
 	if (i2c_configure(dev->zdev, dev->zcfg.raw) != 0)
 		return NULL;
-    // printf("mraa_i2c_init_raw(%d) done\n", bus);
     return dev;
 }
 
@@ -98,7 +96,7 @@ mraa_i2c_frequency(mraa_i2c_context dev, mraa_i2c_mode_t mode)
 mraa_result_t
 mraa_i2c_address(mraa_i2c_context dev, uint8_t addr)
 {
-    dev->addr = (int)addr;
+    dev->addr = addr;
     return MRAA_SUCCESS;
 }
 
@@ -106,16 +104,15 @@ mraa_i2c_address(mraa_i2c_context dev, uint8_t addr)
 int
 mraa_i2c_read(mraa_i2c_context dev, uint8_t* data, int length)
 {
-	if (i2c_read(dev->zdev, data, length, dev->addr))
-		return 0;
-	else
-		return length;
+	int status = i2c_read(dev->zdev, data, length, dev->addr);
+    return status ? 0 : length;
 }
 
 mraa_result_t
 mraa_i2c_write(mraa_i2c_context dev, const uint8_t* data, int bytesToWrite)
 {
-	return i2c_write(dev->zdev, (uint8_t *)data, bytesToWrite, dev->addr) ? MRAA_SUCCESS : MRAA_ERROR_INVALID_HANDLE;
+	int status = i2c_write(dev->zdev, (uint8_t *)data, bytesToWrite, dev->addr);
+    return status == 0 ? MRAA_SUCCESS : MRAA_ERROR_INVALID_HANDLE;
 }
 
 
@@ -130,33 +127,34 @@ mraa_i2c_read_byte(mraa_i2c_context dev)
 int
 mraa_i2c_read_byte_data(mraa_i2c_context dev, uint8_t command)
 {
-    mraa_result_t status = mraa_i2c_write(dev, &command, 1);
-    if (status != MRAA_SUCCESS)
-    	return -1;
     uint8_t data;
-    int bytes_read = mraa_i2c_read(dev, &data, 1);
-    return (bytes_read == 1) ? data : -1;
+    if (mraa_i2c_read_bytes_data(dev, command, &data, 1) == 1)
+        return data;
+    else
+        return -1;
 }
 
 int
 mraa_i2c_read_word_data(mraa_i2c_context dev, uint8_t command)
 {
-    mraa_result_t status = mraa_i2c_write(dev, &command, 1);
-    if (status != MRAA_SUCCESS)
-    	return -1;
-    int data;
-    int bytes_read = mraa_i2c_read(dev, (uint8_t *)&data, 1);
-    return (bytes_read == 2) ? data : -1;
+    uint16_t data;
+    if (mraa_i2c_read_bytes_data(dev, command, (uint8_t*)&data, 2) == 2)
+        return data;
+    else
+        return -1;
 }
 
 int
 mraa_i2c_read_bytes_data(mraa_i2c_context dev, uint8_t command, uint8_t* data, int length)
 {
-    int bytes_read = 0;
-    int bytes_written = mraa_i2c_write(dev, &command, 1);
-    if (bytes_written == 1)
-       bytes_read = mraa_i2c_read(dev, data, length);
-    return bytes_read;
+    struct i2c_msg msgs[2];
+    msgs[0].buf = &command;
+    msgs[0].len = 1;
+    msgs[0].flags = I2C_MSG_WRITE;
+    msgs[1].buf = data;
+    msgs[1].len = length;
+    msgs[1].flags = I2C_MSG_READ | I2C_MSG_STOP;
+    return i2c_transfer(dev->zdev, msgs, 2, dev->addr) ? 0 : length;
 }
 
 
