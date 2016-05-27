@@ -1,0 +1,5 @@
+% Application       : mraa i2c-detect nano-kernel app
+
+% TASK NAME  PRIO ENTRY STACK GROUPS
+% ==================================
+  TASK TASKA    7 main  2048 [EXE]
