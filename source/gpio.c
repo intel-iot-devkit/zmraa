@@ -43,7 +43,7 @@
 #elif defined(CONFIG_GPIO_QMSI_0)
 #define GPIO_DRV_NAME CONFIG_GPIO_QMSI_0_NAME
 #else
-#error GPIO driver not defined
+#define GPIO_DRV_NAME "GPIO_0"
 #endif
 
 static struct _gpio _internalgpios[CONFIG_MRAA_PIN_COUNT];
