@@ -46,13 +46,12 @@ mraa_init()
 {
 #if defined(CONFIG_BOARD_ARDUINO_101)
     plat = mraa_intel_arduino_101();
-    printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
 #elif defined(CONFIG_BOARD_ARDUINO_101_SSS)
     plat = mraa_intel_arduino_101_sss();
-    printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
     plat = mraa_intel_d2k_crb();
 #endif
+    printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
     return plat != NULL ? MRAA_SUCCESS : MRAA_ERROR_NO_RESOURCES;
 }
 
@@ -85,7 +84,6 @@ mraa_has_sub_platform()
 mraa_result_t
 mraa_setup_mux_mapped(mraa_pin_t meta)
 {
-/*
     int mi;
     mraa_result_t ret;
     mraa_gpio_context mux_i = NULL;
@@ -246,7 +244,6 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
         mraa_gpio_owner(mux_i, 0);
         mraa_gpio_close(mux_i);
     }
-*/
     return MRAA_SUCCESS;
 }
 
