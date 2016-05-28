@@ -29,6 +29,7 @@
 #include "mraa/common.h"
 #include "board_config.h"
 
+// Pack structures to save memory
 #pragma pack(push, 1)
 
 /**
@@ -38,12 +39,11 @@ struct _gpio {
     /*@{*/
     uint8_t pin; /**< the pin number, as known to the os. */
     int8_t phy_pin; /**< pin passed to clean init. -1 none and raw*/
-    struct device* zdev;
-    struct gpio_callback zcallback;
+    struct device* zdev;  /**< Zephyr device driver object */
+    struct gpio_callback zcallback; /**< Zephyr gpio callback object */
     mraa_boolean_t owner; /**< If this context originally exported the pin */
     void (* isr)(void *); /**< the interupt service request */
     void *isr_args; /**< args return when interupt service request triggered */
-
     /*@}*/
 };
 
@@ -55,11 +55,25 @@ struct _i2c {
     /*@{*/
     int8_t busnum; /**< the bus number of the /dev/i2c-* device */
     uint8_t addr; /**< the address of the i2c slave */
-    void *handle; /**< generic handle for non-standard drivers that don't use file descriptors  */
     struct device* zdev;
     union dev_config zcfg;
     /*@}*/
 };
+
+/**
+ * A structure representing a PWM pin
+ */
+struct _pwm {
+    /*@{*/
+    int pin; /**< the pin number, as known to the os. */
+    int chipid; /**< the chip id, which the pwm resides */
+    int duty_fp; /**< File pointer to duty file */
+    int period;  /**< Cache the period to speed up setting duty */
+    mraa_boolean_t owner; /**< Owner of pwm context*/
+    struct device* zdev;
+    /*@}*/
+};
+
 
 /**
  * A bitfield representing the capabilities of a pin.
@@ -115,8 +129,8 @@ typedef struct {
 
 typedef struct {
     /*@{*/
-    uint8_t pinmap; /**< sysfs pin */
-    // uint8_t parent_id; /** parent chip id */
+    uint8_t pinmap; /**< Zephyr pin */
+    uint8_t parent_id;  /**< Zephyr driver id */
     uint8_t mux_total; /** Numfer of muxes needed for operation of pin */
     mraa_mux_t mux[CONFIG_MRAA_PINMUX_COUNT]; /** Array holding information about mux */
     uint8_t output_enable; /** Output Enable GPIO, for level shifting */
@@ -131,12 +145,24 @@ typedef struct {
     /*@{*/
     char *name; /**< Pin's real world name */
     mraa_pincapabilities_t capabilites; /**< Pin Capabiliites */
+#if CONFIG_MRAA_GPIO_COUNT > 0
     mraa_pin_t gpio; /**< GPIO structure */
+#endif
+#if CONFIG_MRAA_PWM_COUNT > 0
     mraa_pin_t pwm;  /**< PWM structure */
+#endif
+#if CONFIG_MRAA_AIO_COUNT > 0
     mraa_pin_t aio;  /**< Anaglog Pin */
+#endif
+#if CONFIG_MRAA_I2C_COUNT > 0
     mraa_pin_t i2c;  /**< i2c bus/pin */
+#endif
+#if CONFIG_MRAA_SPI_COUNT > 0
     mraa_pin_t spi;  /**< spi bus/pin */
+#endif
+#if CONFIG_MRAA_UART_COUNT > 0
     mraa_pin_t uart;  /**< uart module/pin */
+#endif
     /*@}*/
 } mraa_pininfo_t;
 
@@ -201,9 +227,11 @@ typedef struct _board_t {
     uint8_t uart_dev_count; /**< Usable spi Count */
     mraa_uart_dev_t uart_dev[CONFIG_MRAA_UART_COUNT]; /**< Array of UARTs */
     mraa_boolean_t no_bus_mux; /**< i2c/spi/adc/pwm/uart bus muxing setup not required */
+#if CONFIG_MRAA_PWM_COUNT > 0
     int pwm_default_period; /**< The default PWM period is US */
     int pwm_max_period; /**< Maximum period in us */
     int pwm_min_period; /**< Minimum period in us */
+#endif
     mraa_platform_t platform_type; /**< Platform type */
     const char* platform_name; /**< Platform Name pointer */
     const char* platform_version; /**< Platform versioning info */

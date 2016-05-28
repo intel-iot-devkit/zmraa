@@ -27,6 +27,25 @@ config  MRAA_GPIO
         bool
         prompt "Mraa GPIO function support"
         depends on MRAA
+        depends on GPIO
         default n
         help
           This option enables support for MRAA GPIO
+
+config  MRAA_I2C
+        bool
+        prompt "Mraa I2C function support"
+        depends on MRAA
+        depends on I2C
+        default n
+        help
+          This option enables support for MRAA I2C
+
+config  MRAA_PWM
+        bool
+        prompt "Mraa I2C function support"
+        depends on MRAA
+        depends on PWM
+        default n
+        help
+          This option enables support for MRAA PWM
