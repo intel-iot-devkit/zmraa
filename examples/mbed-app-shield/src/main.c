@@ -25,19 +25,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "mraa/i2c.h"
-#include <i2c.h>
-#include <sys_clock.h>
-#include <misc/util.h>
+#include <nanokernel.h>
+#include "mraa.h"
 
 #define SLEEPTICKS  SECONDS(1)
 
-#define LM75B_ADDRESS                   (0x48)
-#define LM75B_REGISTER_TEMPERATURE      (0x00)
-#define LM75B_REGISTER_CONFIGURATION    (0x01)
-#define LM75B_CONFIG_SHUTDOWN_MASK      (0x01)
-#define LM75B_CONFIG_SHUTDOWN_POWERON   (0x00)
-#define LM75B_CONFIG_SHUTDOWN_SHUTDOWN  (0x01)
+#define GPIO_SW_CENTER                  4
+#define GPIO_SW_LED                     5
+
+#define LM75B_ADDRESS                   0x48
+#define LM75B_REGISTER_TEMPERATURE      0x00
+#define LM75B_REGISTER_CONFIGURATION    0x01
+#define LM75B_CONFIG_SHUTDOWN_MASK      0x01
+#define LM75B_CONFIG_SHUTDOWN_POWERON   0x00
+#define LM75B_CONFIG_SHUTDOWN_SHUTDOWN  0x01
 
 static void
 get_temperature(mraa_i2c_context i2c)
@@ -71,14 +72,28 @@ main(void)
         return;
     }
     printf("mraa version %s on %s\n", mraa_get_version(), mraa_get_platform_name());
+    mraa_gpio_context gpio_sw_center = mraa_gpio_init(GPIO_SW_CENTER);
+    if (gpio_sw_center == NULL) {
+        printf("mraa_gpio_init for pin %d failed\n", GPIO_SW_CENTER);
+        return;
+    }
+    mraa_gpio_context gpio_sw_led = mraa_gpio_init(GPIO_SW_LED);
+    if (gpio_sw_led == NULL) {
+        printf("mraa_gpio_init for pin %d failed\n", GPIO_SW_LED);
+        return;
+    }
     mraa_i2c_context i2c = mraa_i2c_init(0);
     if (i2c == NULL) {
         printf("mraa_i2c_init failed\n");
         return;
     }
 
+    mraa_boolean_t led_on = 1;
     while (1) {
         get_temperature(i2c);
+        printf("sw_center=%d\n", mraa_gpio_read(gpio_sw_center));
+        mraa_gpio_write(gpio_sw_led, led_on);
+        led_on = !led_on;
         nano_timer_start(&timer, SLEEPTICKS);
         nano_timer_test(&timer, TICKS_UNLIMITED);
     }
