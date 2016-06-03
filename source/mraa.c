@@ -33,7 +33,7 @@
 #include "arduino_101_sss.h"
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
 #include "intel_d2k_crb.h"
-#elif
+#else
 #error Board not defined
 #endif
 
