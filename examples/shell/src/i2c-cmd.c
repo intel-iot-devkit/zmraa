@@ -77,14 +77,12 @@ i2c_get(int bus, uint8_t device_address, uint8_t register_address, uint8_t* data
     if (status != MRAA_SUCCESS) {
         goto i2c_get_exit;
     }
-    status = mraa_i2c_write_byte(i2c, register_address);
-    if (status != MRAA_SUCCESS) {
-        goto i2c_get_exit;
-    }
-    status = mraa_i2c_read(i2c, data, 1) == 1 ? MRAA_SUCCESS : MRAA_ERROR_UNSPECIFIED;
-    if (status != MRAA_SUCCESS) {
-        goto i2c_get_exit;
-    }
+    int value = mraa_i2c_read_byte_data(i2c, register_address);
+    if (value != -1) {
+        *data = value & 0xFF;
+        status = MRAA_SUCCESS;
+    } else
+        status = MRAA_ERROR_UNSPECIFIED;
 i2c_get_exit:
     mraa_i2c_stop(i2c);
     return status;
@@ -203,42 +201,3 @@ i2c_process_command(int argc, char** argv)
     }
 }
 
-/*
-void
-run_interactive_mode()
-{
-    char command[80];
-    while (1) {
-        int i, argc = 1;
-        char* argv[32];
-        char* arg;
-        argv[0] = "mraa-i2c";
-        printf("Command: ");
-        fgets(command, 80, stdin);
-        command[strlen(command) - 1] = 0;
-        if (strcmp(command, "q") == 0)
-            return;
-        char* str = strtok(command, " ");
-        while (str != NULL) {
-            arg = malloc(strlen(str) + 1);
-            argv[argc++] = strcpy(arg, str);
-            str = strtok(NULL, " ");
-        }
-        process_command(argc, argv);
-        for (i = 1; i < argc; ++i)
-            free(argv[i]);
-    }
-}
-
-
-int
-main(int argc, char** argv)
-{
-    mraa_set_log_level(7);
-    if (argc == 1) {
-        run_interactive_mode();
-        return 0;
-    } else
-        return process_command(argc, argv);
-}
-*/
