@@ -1,33 +1,44 @@
-diff --git a/Makefile b/Makefile
-index afeabb3..33bf011 100644
---- a/Makefile
-+++ b/Makefile
-@@ -570,6 +570,12 @@ libs-y += $(KCRYPTO_DIR)/
-  ZEPHYRINCLUDE += -I$(srctree)/lib/crypto/tinycrypt/include
+From d04b5ec02416cfde090563506bc050aa8fd1a01c Mon Sep 17 00:00:00 2001
+From: Henry Bruce <henry.bruce@intel.com>
+Date: Wed, 15 Jun 2016 16:33:55 -0700
+Subject: [PATCH 1/1] zmraa: Added mraa as ext lib
+
+Signed-off-by: Henry Bruce <henry.bruce@intel.com>
+---
+ ext/Kconfig      | 1 +
+ ext/lib/Kbuild   | 1 +
+ ext/lib/Makefile | 3 +++
+ 3 files changed, 5 insertions(+)
+
+diff --git a/ext/Kconfig b/ext/Kconfig
+index 0d13685..3f6f4cd 100644
+--- a/ext/Kconfig
++++ b/ext/Kconfig
+@@ -21,5 +21,6 @@ menu "External Sources"
+ source "ext/hal/Kconfig"
+ 
+ source "ext/lib/crypto/Kconfig"
++source "ext/lib/mraa/Kconfig"
+ 
+ endmenu
+diff --git a/ext/lib/Kbuild b/ext/lib/Kbuild
+index 755bcbe..fffeb3c 100644
+--- a/ext/lib/Kbuild
++++ b/ext/lib/Kbuild
+@@ -1 +1,2 @@
+ obj-y += crypto/
++obj-$(CONFIG_MRAA) += mraa/
+diff --git a/ext/lib/Makefile b/ext/lib/Makefile
+index 118113c..9dc166d 100644
+--- a/ext/lib/Makefile
++++ b/ext/lib/Makefile
+@@ -2,3 +2,6 @@ ifdef CONFIG_TINYCRYPT
+ ZEPHYRINCLUDE += -I$(srctree)/ext/lib/crypto/tinycrypt/include
  endif
  
 +ifdef CONFIG_MRAA
-+KMRAA_DIR := lib/mraa
-+libs-y += ${KMRAA_DIR}/
-+ ZEPHYRINCLUDE += -I$(srctree)/lib/mraa/include
++ZEPHYRINCLUDE += -I$(srctree)/ext/lib/mraa/include
 +endif
-+
- ARCH = $(subst $(DQUOTE),,$(CONFIG_ARCH))
- export ARCH
- ifdef ZEPHYR_GCC_VARIANT
-diff --git a/misc/Kconfig b/misc/Kconfig
-index 4c05169..1d514eb 100644
---- a/misc/Kconfig
-+++ b/misc/Kconfig
-@@ -21,6 +21,10 @@ menu "Cryptography"
- source "lib/crypto/tinycrypt/Kconfig"
- endmenu
- 
-+menu "Mraa"
-+source "lib/mraa/Kconfig"
-+endmenu
-+
- menu "Compile and Link Features"
- 
- config  KERNEL_BIN_NAME
+-- 
+2.4.11
 
