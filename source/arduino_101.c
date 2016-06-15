@@ -110,8 +110,11 @@
  * 3. IO5/PWM1 is connected to pin 49 and 64.
  */
 
+#include <stdio.h>
+
 #include <pinmux.h>
 #include "mraa_internal.h"
+#include "mraa/gpio.h"
 
 static mraa_board_t _board;
 
@@ -148,18 +151,29 @@ mraa_board_t* mraa_intel_arduino_101()
     b->i2c_bus[0].sda = 18;
     b->i2c_bus[0].scl = 19;
 
+    int i2c_raw_gpios[] = { 9, 14, 24, 25 };
+    struct device* zdev = device_get_binding("GPIO_0");
+    if (zdev != NULL) {
+        for (int i = 0; i<4; ++i) {
+            int ret = gpio_pin_configure(zdev, i2c_raw_gpios[i], GPIO_PUD_PULL_UP);
+            if (ret) {
+                printf("Failed to set pull up for pin %d\n", i2c_raw_gpios[i]);
+            }
+        }
+    } else
+        printf("Failed to open gpio driver\n");
 /*
-    mraa_gpio_context gpio_sda = mraa_gpio_init_raw(14);
-    mraa_gpio_context gpio_scl = mraa_gpio_init_raw(9);
-    mraa_gpio_dir(gpio_sda, MRAA_GPIO_IN);
-    mraa_gpio_dir(gpio_scl, MRAA_GPIO_IN);
+    for (int i = 0; i<4; ++i) {
+        mraa_gpio_context gpio = mraa_gpio_init_raw(i2c_raw_gpios[i]);
+        mraa_gpio_dir(gpio, MRAA_GPIO_IN);
+    }
 */
 
-// #if defined(CONFIG_PINMUX_DEV_NAME)
+
 #if 0
-    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
-        printf("Failed to get binding for %s\n", CONFIG_PINMUX_DEV_NAME);
+        printf("Failed to get binding for %s\n", CONFIG_PINMUX_NAME);
         return NULL;
     }
     if (pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_B)) {
@@ -170,6 +184,15 @@ mraa_board_t* mraa_intel_arduino_101()
         printf("Failed to set pinmux for %d\n", 14);
         return NULL;
     }
+    if (pinmux_pin_set(pinmux_dev, 24, PINMUX_FUNC_A)) {
+        printf("Failed to set pinmux for %d\n", 24);
+        return NULL;
+    }
+    if (pinmux_pin_set(pinmux_dev, 25, PINMUX_FUNC_A)) {
+        printf("Failed to set pinmux for %d\n", 25);
+        return NULL;
+    }
+
 #endif
 
     return b;

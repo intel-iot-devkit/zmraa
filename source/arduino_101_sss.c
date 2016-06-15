@@ -146,5 +146,18 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     b->pins[19].i2c.mux_total = 0;
     b->i2c_bus[0].sda = 18;
     b->i2c_bus[0].scl = 19;
+
+    int i2c_raw_gpios[] = { 9, 14, 24, 25 };
+    struct device* zdev = device_get_binding("GPIO_0");
+    if (zdev != NULL) {
+        for (int i = 0; i<4; ++i) {
+            int ret = gpio_pin_configure(zdev, i2c_raw_gpios[i], GPIO_PUD_PULL_UP);
+            if (ret) {
+                printf("Failed to set pull up for pin %d\n", i2c_raw_gpios[i]);
+            }
+        }
+    } else
+        printf("Failed to open gpio driver\n");
+
     return b;
 }
