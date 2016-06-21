@@ -25,52 +25,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "mraa/i2c.h"
+#include <nanokernel.h>
+#include "bmc150.h"
 
-// For bmc150 test
-#include <device.h>
-#include <sensor.h>
-
-void
-print_version()
+static void upm_print_driver_sample(upm_bmc150_magn dev)
 {
-    printf("Version %s on %s\n", mraa_get_version(), mraa_get_platform_name());
-}
-
-
-static void print_driver_sample(struct device *dev)
-{
-    int ret;
-    struct sensor_value value_x, value_y, value_z;
-    ret = sensor_sample_fetch(dev);
-    if (ret) {
-        printf("sensor_sample_fetch failed ret %d\n", ret);
+    double value_x, value_y, value_z;
+    mraa_result_t ret = upm_bmc150_magn_get_value(dev, &value_x, &value_y, &value_z);
+    if (ret == MRAA_SUCCESS) {
+        printf("magn = ( %f  %f  %f )\n", value_x, value_y, value_z);
+    } else {
+        printf("upm_bmc150_magn_get_value failed. Code = %d\n", ret);
         return;
     }
-
-    ret = sensor_channel_get(dev, SENSOR_CHAN_MAGN_X, &value_x);
-    ret = sensor_channel_get(dev, SENSOR_CHAN_MAGN_Y, &value_y);
-    ret = sensor_channel_get(dev, SENSOR_CHAN_MAGN_Z, &value_z);
-    printf("( x y z ) = ( %f  %f  %f )\n", value_x.dval, value_y.dval, value_z.dval);
 }
-
-
 
 void
 main(void)
 {
     mraa_result_t status = mraa_init();
     if (status == MRAA_SUCCESS) {
-        print_version();
-        struct device *dev = device_get_binding("bmc150_magn");
-        if (dev != NULL) {
-            while (1) {
-                print_driver_sample(dev);
-                task_sleep(sys_clock_ticks_per_sec/20);
-            }
-        } else
-            printf("Failed to open %s\n", "upm_bmc150");
-    } else {
+        printf("Version %s on %s\n", mraa_get_version(), mraa_get_platform_name());
+        upm_bmc150_magn upm_dev = upm_bmc150_magn_init(0);
+        if (upm_dev == NULL) {
+            printf("upm_bmc150_magn_init failed\n");
+            return;
+        }
+        while (1) {
+            upm_print_driver_sample(upm_dev);
+            task_sleep(sys_clock_ticks_per_sec/20);
+        }
+    } else
         printf("mraa_init() failed with error code %d\n", status);
-    }
 }

@@ -16,12 +16,11 @@
 * limitations under the License.
 */
 
-#ifndef __SENSOR_BMC150_MAGN_H__
-#define __SENSOR_BMC150_MAGN_H__
+#ifndef __UPM_BMC150_MAGN_H__
+#define __UPM_BMC150_MAGN_H__
 
 #include <stdint.h>
-#include <i2c.h>
-#include <misc/util.h>
+#include "mraa/i2c.h"
 
 #define BMC150_MAGN_REG_CHIP_ID		0x40
 #define BMC150_MAGN_CHIP_ID_VAL		0x32
@@ -99,53 +98,18 @@
 	#define BMC150_MAGN_SET_ATTR
 #endif
 
+/*
 struct bmc150_magn_config {
 	char *i2c_master_dev_name;
 	uint16_t i2c_slave_addr;
-
 #if defined(CONFIG_BMC150_MAGN_TRIGGER_DRDY)
 	char *gpio_drdy_dev_name;
 	uint8_t gpio_drdy_int_pin;
 #endif
 };
+*/
 
-struct bmc150_magn_trim_regs {
-	int8_t x1;
-	int8_t y1;
-	uint16_t reserved1;
-	uint8_t reserved2;
-	int16_t z4;
-	int8_t x2;
-	int8_t y2;
-	uint16_t reserved3;
-	int16_t z2;
-	uint16_t z1;
-	uint16_t xyz1;
-	int16_t z3;
-	int8_t xy2;
-	uint8_t xy1;
-} __packed;
 
-struct bmc150_magn_data {
-	struct device *i2c_master;
-	struct nano_sem sem;
-
-#if defined(CONFIG_BMC150_MAGN_TRIGGER)
-	char __stack fiber_stack[CONFIG_BMC150_MAGN_TRIGGER_FIBER_STACK];
-#endif
-
-#if defined(CONFIG_BMC150_MAGN_TRIGGER_DRDY)
-	struct device *gpio_drdy;
-	struct device *dev;
-	struct gpio_callback gpio_cb;
-	struct sensor_trigger trigger_drdy;
-	sensor_trigger_handler_t handler_drdy;
-#endif
-
-	struct bmc150_magn_trim_regs tregs;
-	int rep_xy, rep_z, odr, max_odr;
-	int sample_x, sample_y, sample_z;
-};
 
 enum bmc150_magn_power_modes {
 	BMC150_MAGN_POWER_MODE_SUSPEND,
@@ -179,15 +143,18 @@ enum bmc150_magn_axis {
 	BMC150_MAGN_AXIS_XYZR_MAX,
 };
 
+
+// Public definitions
+typedef struct _upm_bmc150_magn* upm_bmc150_magn;
+upm_bmc150_magn upm_bmc150_magn_init(int bus);
+mraa_result_t upm_bmc150_magn_get_value(upm_bmc150_magn dev, double *x, double *y, double *z);
+
 #if defined(CONFIG_BMC150_MAGN_TRIGGER)
 int bmc150_magn_trigger_set(struct device *dev,
 			    const struct sensor_trigger *trig,
 			    sensor_trigger_handler_t handler);
-
 int bmc150_magn_init_interrupt(struct device *dev);
 #endif
 
-#define SYS_LOG_DOMAIN "BMC150_MAGN"
-#define SYS_LOG_LEVEL CONFIG_BMC150_MAGN_SYS_LOG_LEVEL
-#include <misc/sys_log.h>
-#endif /* __SENSOR_BMC150_MAGN_H__ */
+
+#endif /* __UPM_BMC150_MAGN_H__ */

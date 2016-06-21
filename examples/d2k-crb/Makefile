@@ -1,6 +1,6 @@
 MDEF_FILE = prj.mdef
 KERNEL_TYPE = nano
-BOARD ?= qemu_x86
+BOARD = quark_d2000_crb
 CONF_FILE = prj.conf
 
 include ${ZEPHYR_BASE}/Makefile.inc
