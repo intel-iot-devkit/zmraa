@@ -163,6 +163,17 @@ mraa_result_t mraa_i2c_write_byte_data(mraa_i2c_context dev, const uint8_t data,
 mraa_result_t mraa_i2c_write_word_data(mraa_i2c_context dev, const uint16_t data, const uint8_t command);
 
 /**
+ * Update a single byte using specified register and mask
+ *
+ * @param dev The i2c context
+ * @param mask The mask
+ * @param data The data
+ * @param command The register
+ * @return Result of operation
+ */
+ mraa_result_t mraa_i2c_update_byte_data(mraa_i2c_context dev, const uint16_t mask, const uint8_t data, const uint8_t command);
+
+/**
  * Sets the i2c slave address.
  *
  * @param dev The i2c context

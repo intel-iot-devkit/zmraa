@@ -144,16 +144,8 @@ mraa_i2c_read_word_data(mraa_i2c_context dev, uint8_t command)
 int
 mraa_i2c_read_bytes_data(mraa_i2c_context dev, uint8_t command, uint8_t* data, int length)
 {
-    struct i2c_msg msgs[2];
-    msgs[0].buf = &command;
-    msgs[0].len = 1;
-    msgs[0].flags = I2C_MSG_WRITE;
-    msgs[1].buf = data;
-    msgs[1].len = length;
-    msgs[1].flags = I2C_MSG_READ | I2C_MSG_STOP;
-    return i2c_transfer(dev->zdev, msgs, 2, dev->addr) ? 0 : length;
+    return i2c_burst_read(dev->zdev, dev->addr, command, data, length) == 0 ? length : 0;
 }
-
 
 
 mraa_result_t
@@ -184,6 +176,14 @@ mraa_i2c_write_word_data(mraa_i2c_context dev, const uint16_t data, const uint8_
     mraa_result_t status = mraa_i2c_write(dev, buf, 3);
     return status;
 }
+
+mraa_result_t
+mraa_i2c_update_byte_data(mraa_i2c_context dev, const uint16_t mask, const uint8_t data, const uint8_t command)
+{
+    int status = i2c_reg_update_byte(dev->zdev, dev->addr, command, mask, data);
+    return status == 0 ? MRAA_SUCCESS : MRAA_ERROR_UNSPECIFIED;
+}
+
 
 mraa_result_t
 mraa_i2c_stop(mraa_i2c_context dev)
