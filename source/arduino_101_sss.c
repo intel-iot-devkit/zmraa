@@ -110,7 +110,9 @@
  * 3. IO5/PWM1 is connected to pin 49 and 64.
  */
 
+#include <pinmux.h>
 #include "mraa_internal.h"
+#include "mraa/aio.h"
 
 static mraa_board_t _board;
 
@@ -134,12 +136,12 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 14, 10, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 15, 11, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 16, 12, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 17, 13, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 18, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    mraa_set_pininfo(b, 19,  9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    mraa_set_pininfo(b, 14, 10, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 15, 11, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 16, 12, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 17, 13, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 18, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+    mraa_set_pininfo(b, 19,  9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
     b->def_i2c_bus = 0;
     b->i2c_bus[0].bus_id = 0;
     b->pins[18].i2c.mux_total = 0;
@@ -147,6 +149,8 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     b->i2c_bus[0].sda = 18;
     b->i2c_bus[0].scl = 19;
 
+// sss will have a different configuration
+#if 0
     int i2c_raw_gpios[] = { 9, 14, 24, 25 };
     struct device* zdev = device_get_binding("GPIO_0");
     if (zdev != NULL) {
@@ -158,6 +162,6 @@ mraa_board_t* mraa_intel_arduino_101_sss()
         }
     } else
         printf("Failed to open gpio driver\n");
-
+#endif
     return b;
 }

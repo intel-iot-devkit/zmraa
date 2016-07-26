@@ -31,7 +31,7 @@
 #ifndef __MRAA_H__
 #define __MRAA_H__
 
-// #include "mraa/aio.h"
+#include "mraa/aio.h"
 // #include "mraa/common.h"
 // #include "mraa/spi.h"
 #include "mraa/i2c.h"

@@ -120,6 +120,7 @@ static mraa_board_t _board;
 
 mraa_board_t* mraa_intel_arduino_101()
 {
+	printf("coming into the function mraa_intel_arduino_101 to set up the board\n");
     mraa_board_t* b = &_board;
     mraa_set_board_config(b);
     b->platform_name = "Arduino 101 x86";

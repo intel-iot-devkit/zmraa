@@ -32,6 +32,15 @@ config  MRAA_GPIO
         help
           This option enables support for MRAA GPIO
 
+config  MRAA_AIO
+        bool
+        prompt "Mraa AIO function support"
+        select MRAA
+        select AIO
+        default n
+        help
+          This option enables support for MRAA AIO
+
 config  MRAA_I2C
         bool
         prompt "Mraa I2C function support"
