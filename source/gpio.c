@@ -69,16 +69,16 @@ mraa_gpio_init(int pin)
 {
     mraa_board_t* board = plat;
     if (board == NULL) {
-        // syslog(LOG_ERR, "gpio: platform not initialised");
+        printf("gpio: platform not initialised\n");
         return NULL;
     }
 
     if (pin < 0 || pin >= board->phy_pin_count) {
-        // syslog(LOG_ERR, "gpio: pin %i beyond platform definition", pin);
+        printf("gpio: pin %i beyond platform definition\n", pin);
         return NULL;
     }
     if (board->pins[pin].capabilites.gpio != 1) {
-        // syslog(LOG_ERR, "gpio: pin %i not capable of gpio", pin);
+        printf("gpio: pin %i not capable of gpio\n", pin);
         return NULL;
     }
 #if 0

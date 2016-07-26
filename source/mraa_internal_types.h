@@ -25,6 +25,7 @@
 
 #include <gpio.h>
 #include <i2c.h>
+#include <adc.h>
 #include <pinmux.h>
 #include "mraa/common.h"
 #include "board_config.h"
@@ -74,6 +75,19 @@ struct _pwm {
     /*@}*/
 };
 
+/**
+ * A structure representing a aio pin.
+ */
+struct _aio {
+    /*@{*/
+    uint8_t pin; /**< the pin number, as known to the os. */
+    int8_t phy_pin; /**< pin passed to clean init. -1 none and raw*/
+    struct device* zdev;  /**< Zephyr device driver object */
+    int value_bit; /**< 10 bits by default. Can be increased based on board */
+    struct adc_seq_table* table; /** struct to hold list of samples */
+    uint8_t seq_buffer[4]; /** buffer to save the analog values that have been read */
+    /*@}*/
+};
 
 /**
  * A bitfield representing the capabilities of a pin.
