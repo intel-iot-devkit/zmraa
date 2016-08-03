@@ -1,7 +1,8 @@
 /*
  * Author: Thomas Ingleby <thomas.c.ingleby@intel.com>
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
- * Copyright (c) 2014, 2015 Intel Corporation.
+ * Author: Abhishek Malik <abhishek.malik@intel.com>
+ * Copyright (c) 2014, 2015, 2016 Intel Corporation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,221 +25,199 @@
  */
 
 #include <stdlib.h>
-#include <limits.h>
-#include <errno.h>
+#include <pwm.h>
+#include <misc/util.h>
+#include <pinmux.h>
 #include <string.h>
 #include "mraa/pwm.h"
 #include "mraa_internal.h"
+#include "mraa_internal_types.h"
 
-static struct _pwm tmp_pwm;
+#if defined(CONFIG_STDOUT_CONSOLE)
+#include <stdio.h>
+#else
+#include <misc/printk.h>
+#define printf printk
+#endif
 
+/* about 1 second
+   this calculation is based on that fact that
+   one clock cycle comes to be about 31.25 ns */
+#define MAX_PERIOD	32000000
+#define DEFAULT_DUTY_CYCLE    0.5
 
-static mraa_result_t
-mraa_pwm_write_period(mraa_pwm_context dev, int period)
-{
-    return MRAA_SUCCESS;
-}
-
-static mraa_result_t
-mraa_pwm_write_duty(mraa_pwm_context dev, int duty)
-{
-    return MRAA_SUCCESS;
-}
-
-static int
-mraa_pwm_read_period(mraa_pwm_context dev)
-{
-    int ret = 0;
-    return (int) ret;
-}
-
-static int
-mraa_pwm_read_duty(mraa_pwm_context dev)
-{
-    int ret = 0;
-    return (int) ret;
-}
+#if defined(CONFIG_PWM)
+#if defined(CONFIG_PWM_QMSI)
+#define PWM_DEVICE_NAME CONFIG_PWM_QMSI_DEV_NAME
+#elif defined(CONFIG_PWM_DW)
+#define PWM_DEVICE_NAME CONFIG_PWM_DW_0_DRV_NAME
+#endif
+#endif
 
 mraa_pwm_context
 mraa_pwm_init(int pin)
 {
     mraa_board_t* board = plat;
     if (board == NULL) {
-        // syslog(LOG_ERR, "pwm_init: Platform Not Initialised");
         return NULL;
     }
-    if (pin < 0 || pin > board->phy_pin_count) {
-        // syslog(LOG_ERR, "pwm_init: pin %i beyond platform definition", pin);
+
+    if (pin < 0 || pin >= board->phy_pin_count) {
         return NULL;
     }
     if (board->pins[pin].capabilites.pwm != 1) {
-        // syslog(LOG_ERR, "pwm_init: pin %i not capable of pwm", pin);
         return NULL;
     }
 
-    if (board->pins[pin].pwm.mux_total > 0) {
-        if (mraa_setup_mux_mapped(board->pins[pin].pwm) != MRAA_SUCCESS) {
-            // syslog(LOG_ERR, "pwm_init: Failed to set-up pwm%i multiplexer", pin);
-            return NULL;
-        }
-    }
-
-    int chip = board->pins[pin].pwm.parent_id;
-    int pinn = board->pins[pin].pwm.pinmap;
-
-    return mraa_pwm_init_raw(chip, pinn);
+    mraa_pwm_context dev = (mraa_pwm_context) malloc(sizeof(struct _pwm));
+    dev->pin = pin;
+    dev->phy_pin = board->pins[pin].pwm.pinmap;
+    dev->zdev = device_get_binding(PWM_DEVICE_NAME);
+    if(dev->zdev == NULL)
+        return NULL;
+    dev->period = MAX_PERIOD;
+    dev->duty_percentage = DEFAULT_DUTY_CYCLE;
+    return dev;
 }
 
 mraa_pwm_context
-mraa_pwm_init_raw(int chipin, int pin)
+mraa_pwm_init_raw(int chipid, int pin)
 {
-    mraa_pwm_context dev = &tmp_pwm;
-    return dev;
+    // probably not needed
+    return NULL;
 }
 
 mraa_result_t
 mraa_pwm_write(mraa_pwm_context dev, float percentage)
 {
-    if (!dev) {
-        // syslog(LOG_ERR, "pwm: write: context is NULL");
-        return MRAA_ERROR_INVALID_HANDLE;
+    if(percentage < 0.0){
+        percentage = 0.0;
     }
+    else if(percentage > 1.0){
+        percentage = 1.0;
+    }
+    dev->duty_percentage = percentage;
 
-    if (dev->period == -1) {
-        if (mraa_pwm_read_period(dev) <= 0)
-            return MRAA_ERROR_NO_DATA_AVAILABLE;
+#if defined(CONFIG_PWM_QMSI)
+    uint8_t pwm_duty_val = (uint8_t) (100*percentage);
+    if(pwm_pin_set_duty_cycle(dev->zdev, dev->phy_pin, pwm_duty_val) != 0){
+        return MRAA_ERROR_UNSPECIFIED;
     }
-
-    if (percentage > 1.0f) {
-        // syslog(LOG_WARNING, "pwm_write: %i%% entered, defaulting to 100%%",(int) percentage * 100);
-        return mraa_pwm_write_duty(dev, dev->period);
+#elif defined(CONFIG_PWM_DW)
+    uint32_t on_time = (uint32_t) (percentage*dev->period);
+    uint32_t off_time = dev->period - on_time;
+    if(pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, off_time) != 0){
+        return MRAA_ERROR_UNSPECIFIED;
     }
-    return mraa_pwm_write_duty(dev, percentage * dev->period);
+#endif
+    dev->duty_percentage = percentage;
+    return MRAA_SUCCESS;
 }
 
 float
 mraa_pwm_read(mraa_pwm_context dev)
 {
-    if (!dev) {
-        // syslog(LOG_ERR, "pwm: read: context is NULL");
-        return MRAA_ERROR_INVALID_HANDLE;
+    if(dev->duty_percentage > 1.0){
+        return 1.0;
     }
-
-    int period = mraa_pwm_read_period(dev);
-    if (period > 0) {
-        return (mraa_pwm_read_duty(dev) / (float) period);
+    else if(dev->duty_percentage < 0.0){
+        return 0.0;
     }
-    return 0.0f;
+    else{
+        return dev->duty_percentage;
+    }
 }
 
 mraa_result_t
 mraa_pwm_period(mraa_pwm_context dev, float seconds)
 {
-    return mraa_pwm_period_ms(dev, seconds * 1000);
+    return mraa_pwm_period_ms(dev, seconds*1000);
 }
 
 mraa_result_t
 mraa_pwm_period_ms(mraa_pwm_context dev, int ms)
 {
-    return mraa_pwm_period_us(dev, ms * 1000);
+    return mraa_pwm_period_us(dev, ms*1000);
 }
 
 mraa_result_t
 mraa_pwm_period_us(mraa_pwm_context dev, int us)
 {
-    int min, max;
-
-    if (!dev) {
-        // syslog(LOG_ERR, "pwm: period: context is NULL");
-        return MRAA_ERROR_INVALID_HANDLE;
+    dev->period = 32*us;
+#if defined(CONFIG_PWM_QMSI)
+    // the qmsi function deals in us so we don't need the
+    // number of cycles for this calculation.
+    if(pwm_pin_set_period(dev->zdev, dev->phy_pin, us) != 0){
+        return MRAA_ERROR_UNSPECIFIED;
     }
-
-    min = plat->pwm_min_period;
-    max = plat->pwm_max_period;
-    if (us < min || us > max) {
-        // syslog(LOG_ERR, "pwm_period: pwm%i: %i uS outside platform range", dev->pin, us);
-        return MRAA_ERROR_INVALID_PARAMETER;
-    }
-    return mraa_pwm_write_period(dev, us * 1000);
+#elif defined(CONFIG_PWM_DW)
+    // nothing to do as of now
+    // need to figure out if they put in a function for the
+    // dw driver
+    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+#endif
+    return MRAA_SUCCESS;
 }
 
 mraa_result_t
 mraa_pwm_pulsewidth(mraa_pwm_context dev, float seconds)
 {
-    return mraa_pwm_pulsewidth_ms(dev, seconds * 1000);
+    return mraa_pwm_pulsewidth_ms(dev, seconds*1000);
 }
 
 mraa_result_t
 mraa_pwm_pulsewidth_ms(mraa_pwm_context dev, int ms)
 {
-    return mraa_pwm_pulsewidth_us(dev, ms * 1000);
+    return mraa_pwm_pulsewidth_us(dev, ms*1000);
 }
 
 mraa_result_t
 mraa_pwm_pulsewidth_us(mraa_pwm_context dev, int us)
 {
-    return mraa_pwm_write_duty(dev, us * 1000);
+    uint32_t on_time = 32*us;
+    if(on_time > dev->period){
+        // the pulsewidth cannot be greater than the period
+        return MRAA_ERROR_UNSPECIFIED;
+    }
+    if(pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, dev->period-on_time) != 0){
+        return MRAA_ERROR_UNSPECIFIED;
+    }
+    return MRAA_SUCCESS;
 }
 
 mraa_result_t
 mraa_pwm_enable(mraa_pwm_context dev, int enable)
 {
+    // this functionality is not supported by either qmsi
+    // or dw, however, it is used a lot by the upm drivers
+    // hence, returning success now, but need to come up with a
+    // proper solution
     return MRAA_SUCCESS;
 }
 
 mraa_result_t
-mraa_pwm_unexport_force(mraa_pwm_context dev)
+mraa_pwm_owner(mraa_pwm_context dev, mraa_boolean_t owner)
 {
-    return MRAA_SUCCESS;
-}
-
-mraa_result_t
-mraa_pwm_unexport(mraa_pwm_context dev)
-{
-    return MRAA_SUCCESS;
+    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
 }
 
 mraa_result_t
 mraa_pwm_close(mraa_pwm_context dev)
 {
-    return MRAA_SUCCESS;
-}
-
-mraa_result_t
-mraa_pwm_owner(mraa_pwm_context dev, mraa_boolean_t owner_new)
-{
-    if (!dev) {
-        // syslog(LOG_ERR, "pwm: owner: context is NULL");
-        return MRAA_ERROR_INVALID_HANDLE;
-    }
-    dev->owner = owner_new;
+    free(dev);
     return MRAA_SUCCESS;
 }
 
 int
 mraa_pwm_get_max_period(mraa_pwm_context dev)
 {
-    if (plat == NULL) {
-        return -1;
-    }
-
-    if (!dev) {
-        // syslog(LOG_ERR, "pwm: get_max_period: context is NULL");
-        return MRAA_ERROR_INVALID_HANDLE;
-    }
-    return plat->pwm_max_period;
+    return (int) dev->period;
 }
 
 int
 mraa_pwm_get_min_period(mraa_pwm_context dev)
 {
-    if (plat == NULL) {
-        return -1;
-    }
-
-    if (!dev) {
-        // syslog(LOG_ERR, "pwm: get_min_period: context is NULL");
-        return MRAA_ERROR_INVALID_HANDLE;
-    }
-    return plat->pwm_min_period;
+    // returning period for now, might need to add another field
+    // for min period
+    return (int) dev->period;
 }
