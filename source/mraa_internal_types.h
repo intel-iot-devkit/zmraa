@@ -67,10 +67,9 @@ struct _i2c {
 struct _pwm {
     /*@{*/
     int pin; /**< the pin number, as known to the os. */
-    int chipid; /**< the chip id, which the pwm resides */
-    int duty_fp; /**< File pointer to duty file */
+    int8_t phy_pin; /**< pin passed to clean init. -1 none and raw*/
     int period;  /**< Cache the period to speed up setting duty */
-    mraa_boolean_t owner; /**< Owner of pwm context*/
+    float duty_percentage;
     struct device* zdev;
     /*@}*/
 };

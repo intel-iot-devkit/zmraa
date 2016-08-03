@@ -120,6 +120,7 @@ static mraa_board_t _board;
 
 mraa_board_t* mraa_intel_arduino_101()
 {
+	printf("coming into the function mraa_intel_arduino_101 to set up the board\n");
     mraa_board_t* b = &_board;
     mraa_set_board_config(b);
     b->platform_name = "Arduino 101 x86";
@@ -127,13 +128,13 @@ mraa_board_t* mraa_intel_arduino_101()
     mraa_set_pininfo(b,  0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  2, 18, "IO2",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b,  3, 17, "IO3",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  3,  0, "IO3",  (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  4, 19, "IO4",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b,  5, 15, "IO5",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b,  6,  0, "IO6",  (mraa_pincapabilities_t){ 0, 0, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  5,  1, "IO5",  (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  6,  2, "IO6",  (mraa_pincapabilities_t){ 0, 0, 1, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  7, 20, "IO7",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  8, 16, "IO8",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b,  9, 16, "IO9",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  9,  3, "IO9",  (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
@@ -192,7 +193,6 @@ mraa_board_t* mraa_intel_arduino_101()
         printf("Failed to set pinmux for %d\n", 25);
         return NULL;
     }
-
 #endif
 
     return b;
