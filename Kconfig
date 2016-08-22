@@ -59,3 +59,12 @@ config  MRAA_PWM
         default n
         help
           This option enables support for MRAA PWM
+
+config  MRAA_UART
+        bool
+        prompt "Mraa UART function support"
+        select UART
+        select MRAA
+        default n
+        help
+          This option enables support for MRAA UART

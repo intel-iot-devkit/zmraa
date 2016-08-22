@@ -75,7 +75,18 @@ struct _pwm {
 };
 
 /**
- * A structure representing a aio pin.
+ * A structure representing uart.
+ */
+struct _uart {
+    /*@{*/
+    uint8_t block; /**< the uart block number, as known to the os. */
+    int8_t phy_pin; /**< pin passed to clean init. -1 none and raw */
+    struct device* zdev;  /**< Zephyr device driver object */
+    /*@}*/
+};
+
+/**
+ * A structure representing aio pin.
  */
 struct _aio {
     /*@{*/
