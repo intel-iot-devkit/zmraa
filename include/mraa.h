@@ -37,5 +37,6 @@
 #include "mraa/i2c.h"
 #include "mraa/gpio.h"
 #include "mraa/pwm.h"
+#include "mraa/uart.h"
 
 #endif

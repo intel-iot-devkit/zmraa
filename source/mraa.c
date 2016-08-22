@@ -387,6 +387,9 @@ mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, 
 #if defined(CONFIG_BOARD_ARDUINO_101_SSS)
     pin_info->aio.pinmap = zephyr_pin;
 #endif
+#if defined(CONFIG_BOARD_ARDUINO_101)
+    pin_info->uart.pinmap = zephyr_pin;
+#endif
     pin_info->pwm.pinmap = zephyr_pin;
     pin_info->gpio.mux_total = 0;
     pin_info->name = name;
