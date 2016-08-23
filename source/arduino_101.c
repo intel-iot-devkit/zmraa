@@ -120,13 +120,12 @@ static mraa_board_t _board;
 
 mraa_board_t* mraa_intel_arduino_101()
 {
-	printf("coming into the function mraa_intel_arduino_101 to set up the board\n");
     mraa_board_t* b = &_board;
     mraa_set_board_config(b);
     b->platform_name = "Arduino 101 x86";
     b->platform_type = MRAA_INTEL_ARDUINO_101;
-    mraa_set_pininfo(b,  0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b,  1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b,  0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 1 });
+    mraa_set_pininfo(b,  1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 1 });
     mraa_set_pininfo(b,  2, 18, "IO2",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  3,  0, "IO3",  (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  4, 19, "IO4",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
@@ -158,11 +157,10 @@ mraa_board_t* mraa_intel_arduino_101()
         for (int i = 0; i<4; ++i) {
             int ret = gpio_pin_configure(zdev, i2c_raw_gpios[i], GPIO_PUD_PULL_UP);
             if (ret) {
-                printf("Failed to set pull up for pin %d\n", i2c_raw_gpios[i]);
+                //printf("Failed to set pull up for pin %d\n", i2c_raw_gpios[i]);
             }
         }
-    } else
-        printf("Failed to open gpio driver\n");
+    }
 /*
     for (int i = 0; i<4; ++i) {
         mraa_gpio_context gpio = mraa_gpio_init_raw(i2c_raw_gpios[i]);
