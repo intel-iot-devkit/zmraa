@@ -67,6 +67,10 @@ static void gpio_internal_callback(struct device *port, struct gpio_callback *cb
 mraa_gpio_context
 mraa_gpio_init(int pin)
 {
+    /* Make sure mraa is initialized */
+    if (mraa_init() != MRAA_SUCCESS)
+        return NULL;
+
     mraa_board_t* board = plat;
     if (board == NULL) {
         printf("gpio: platform not initialised\n");

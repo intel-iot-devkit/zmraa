@@ -11,6 +11,10 @@ static struct _i2c tmp_i2c_dev;
 mraa_i2c_context
 mraa_i2c_init(int bus)
 {
+    /* Make sure mraa is initialized */
+    if (mraa_init() != MRAA_SUCCESS)
+        return NULL;
+
     mraa_board_t* board = plat;
     if (board == NULL) {
         // syslog(LOG_ERR, "i2c: Platform Not Initialised");
