@@ -48,6 +48,10 @@ typedef struct adc_seq_table* adc_seq_table_ptr;
 mraa_aio_context
 mraa_aio_init(unsigned int pin)
 {
+    /* Make sure mraa is initialized */
+    if (mraa_init() != MRAA_SUCCESS)
+        return NULL;
+
     printf("Entering the mraa aio functionality\n");
     mraa_board_t* board = plat;
     if(board == NULL){

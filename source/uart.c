@@ -48,6 +48,10 @@
 mraa_uart_context
 mraa_uart_init(int uart)
 {
+    /* Make sure mraa is initialized */
+    if (mraa_init() != MRAA_SUCCESS)
+        return NULL;
+
     mraa_uart_context dev = (mraa_uart_context) malloc(sizeof(struct _uart));
     dev->zdev = device_get_binding(UART_DEVICE);
     dev->block = 1;

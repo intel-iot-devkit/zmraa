@@ -57,6 +57,10 @@
 mraa_pwm_context
 mraa_pwm_init(int pin)
 {
+    /* Make sure mraa is initialized */
+    if (mraa_init() != MRAA_SUCCESS)
+        return NULL;
+
     mraa_board_t* board = plat;
     if (board == NULL) {
         return NULL;
