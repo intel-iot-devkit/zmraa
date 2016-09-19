@@ -51,7 +51,6 @@ mraa_init()
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
     plat = mraa_intel_d2k_crb();
 #endif
-    printf("mraa_board_t = %d bytes\n", sizeof(mraa_board_t));
     return plat != NULL ? MRAA_SUCCESS : MRAA_ERROR_NO_RESOURCES;
 }
 
@@ -297,6 +296,30 @@ mraa_pin_mode_test(int pin, mraa_pinmodes_t mode)
             break;
     }
     return 0;
+}
+
+unsigned int
+mraa_adc_raw_bits()
+{
+    if (plat == NULL)
+        return 0;
+
+    if (plat->aio_count == 0)
+        return 0;
+
+    return plat->adc_raw;
+}
+
+unsigned int
+mraa_adc_supported_bits()
+{
+    if (plat == NULL)
+        return 0;
+
+    if (plat->aio_count == 0)
+        return 0;
+
+    return plat->adc_supported;
 }
 
 int

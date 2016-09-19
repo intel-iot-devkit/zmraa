@@ -148,6 +148,8 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     b->pins[19].i2c.mux_total = 0;
     b->i2c_bus[0].sda = 18;
     b->i2c_bus[0].scl = 19;
+    b->adc_raw = 12;
+    b->adc_supported = 12;
 
 // sss will have a different configuration
 #if 0
