@@ -42,13 +42,16 @@
 #define ADC_DEVICE_NAME "ADC_0"
 #endif
 
+#define DEFAULT_BITS 10
+
+static int raw_bits;
+
 typedef struct adc_seq_entry* adc_seq_entry_ptr;
 typedef struct adc_seq_table* adc_seq_table_ptr;
 
 mraa_aio_context
 mraa_aio_init(unsigned int pin)
 {
-    printf("Entering the mraa aio functionality\n");
     mraa_board_t* board = plat;
     if(board == NULL){
         return NULL;
@@ -68,6 +71,8 @@ mraa_aio_init(unsigned int pin)
     if(dev->zdev == NULL)
         return NULL;
 
+    dev->value_bit = DEFAULT_BITS;
+
     adc_seq_entry_ptr sample = (adc_seq_entry_ptr) malloc(sizeof(struct adc_seq_entry));
     adc_seq_table_ptr table = (adc_seq_table_ptr) malloc(sizeof(struct adc_seq_table));
     sample->sampling_delay = 12;
@@ -81,6 +86,9 @@ mraa_aio_init(unsigned int pin)
     dev->table = table;
     adc_enable(dev->zdev);
     dev->pin = pin;
+
+    raw_bits = mraa_adc_raw_bits();
+
     return dev;
 }
 
@@ -99,27 +107,54 @@ int
 mraa_aio_read(mraa_aio_context dev)
 {
     uint32_t value;
+    uint32_t shifter_value;
+
     if(adc_read(dev->zdev, dev->table))
-        value = -1;
-    else
-        value = dev->table->entries->buffer[1]*256 + dev->table->entries->buffer[0];
+        return -1;
+    value = dev->table->entries->buffer[1]*256 + dev->table->entries->buffer[0];
+
+    if (dev->value_bit != raw_bits) {
+        if (raw_bits > dev->value_bit) {
+            shifter_value = raw_bits - dev->value_bit;
+            value = value >> shifter_value;
+        } else {
+            shifter_value = dev->value_bit - raw_bits;
+            value = value << shifter_value;
+        }
+    }
+
     return value;
 }
 
 float
 mraa_aio_read_float(mraa_aio_context dev)
 {
-    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+    if (dev == NULL)
+        return -1.0;
+
+    int32_t analog_value_int = mraa_aio_read(dev);
+    if (analog_value_int < 0)
+        return -1.0;
+
+    float max_analog_value = (1 << dev->value_bit) - 1;
+    return analog_value_int / max_analog_value;
 }
 
 mraa_result_t
 mraa_aio_set_bit(mraa_aio_context dev, int bits)
 {
-    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+    if (dev == NULL || bits < 1)
+        return MRAA_ERROR_INVALID_RESOURCE;
+
+    dev->value_bit = bits;
+    return MRAA_SUCCESS;
 }
 
 int
 mraa_aio_get_bit(mraa_aio_context dev)
 {
-    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+    if (dev == NULL)
+        return 0;
+
+    return dev->value_bit;
 }
