@@ -1,26 +1,27 @@
-From d04b5ec02416cfde090563506bc050aa8fd1a01c Mon Sep 17 00:00:00 2001
-From: Henry Bruce <henry.bruce@intel.com>
-Date: Wed, 15 Jun 2016 16:33:55 -0700
-Subject: [PATCH 1/1] zmraa: Added mraa as ext lib
+From d26d9c871c83f2b7b5634040882c01e48dfd9b43 Mon Sep 17 00:00:00 2001
+From: Brendan Le Foll <brendan.le.foll@intel.com>
+Date: Fri, 23 Sep 2016 09:20:17 +0100
+Subject: [PATCH] zmraa: Added mraa as ext lib
 
-Signed-off-by: Henry Bruce <henry.bruce@intel.com>
+Signed-off-by: Brendan Le Foll <brendan.le.foll@intel.com>
 ---
  ext/Kconfig      | 1 +
  ext/lib/Kbuild   | 1 +
- ext/lib/Makefile | 3 +++
- 3 files changed, 5 insertions(+)
+ ext/lib/Makefile | 4 ++++
+ 3 files changed, 6 insertions(+)
 
 diff --git a/ext/Kconfig b/ext/Kconfig
-index 0d13685..3f6f4cd 100644
+index 9d26499..1caaff9 100644
 --- a/ext/Kconfig
 +++ b/ext/Kconfig
-@@ -21,5 +21,6 @@ menu "External Sources"
+@@ -21,6 +21,7 @@ menu "External Sources"
  source "ext/hal/Kconfig"
  
  source "ext/lib/crypto/Kconfig"
 +source "ext/lib/mraa/Kconfig"
  
- endmenu
+ source "ext/fs/Kconfig"
+ 
 diff --git a/ext/lib/Kbuild b/ext/lib/Kbuild
 index 755bcbe..fffeb3c 100644
 --- a/ext/lib/Kbuild
@@ -29,16 +30,17 @@ index 755bcbe..fffeb3c 100644
  obj-y += crypto/
 +obj-$(CONFIG_MRAA) += mraa/
 diff --git a/ext/lib/Makefile b/ext/lib/Makefile
-index 118113c..9dc166d 100644
+index af81171..6803999 100644
 --- a/ext/lib/Makefile
 +++ b/ext/lib/Makefile
-@@ -2,3 +2,6 @@ ifdef CONFIG_TINYCRYPT
- ZEPHYRINCLUDE += -I$(srctree)/ext/lib/crypto/tinycrypt/include
+@@ -10,3 +10,7 @@ endif
+ ifdef CONFIG_MBEDTLS_LIBRARY
+ include $(srctree)/ext/lib/crypto/mbedtls/Makefile
  endif
- 
++
 +ifdef CONFIG_MRAA
 +ZEPHYRINCLUDE += -I$(srctree)/ext/lib/mraa/include
 +endif
 -- 
-2.4.11
+2.9.3
 
