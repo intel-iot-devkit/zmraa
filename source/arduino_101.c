@@ -134,22 +134,33 @@ mraa_board_t* mraa_intel_arduino_101()
     mraa_set_pininfo(b,  7, 20, "IO7",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  8, 16, "IO8",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  9,  3, "IO9",  (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
+    mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
+    mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
+    mraa_set_pininfo(b, 13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
     mraa_set_pininfo(b, 14,  0, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 15,  0, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 16,  0, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 17,  0, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 18,  0, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    mraa_set_pininfo(b, 19,  0, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    mraa_set_pininfo(b, 18, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    mraa_set_pininfo(b, 19,  9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
     b->def_i2c_bus = 0;
     b->i2c_bus[0].bus_id = 0;
     b->pins[18].i2c.mux_total = 0;
     b->pins[19].i2c.mux_total = 0;
     b->i2c_bus[0].sda = 18;
     b->i2c_bus[0].scl = 19;
+#if defined (CONFIG_SPI_0)
+    b->spi_bus[0].bus_id = 0;
+#elif defined (CONFIG_SPI_1)
+    b->spi_bus[0].bus_id = 1;
+#elif defined (CONFIG_SPI_2)
+    b->spi_bus[0].bus_id = 2;
+#endif
+    b->spi_bus[0].sclk = 13;
+    b->spi_bus[0].mosi = 11;
+    b->spi_bus[0].miso = 12;
+    b->spi_bus[0].cs = 10;
 
     int i2c_raw_gpios[] = { 9, 14, 24, 25 };
     struct device* zdev = device_get_binding("GPIO_0");

@@ -86,6 +86,18 @@ struct _uart {
 };
 
 /**
+ * A structure representing a spi bus.
+ */
+struct _spi {
+    /*@{*/
+    int8_t busnum; /**< the bus number of the /dev/i2c-* device */
+    struct spi_config* config; /**< struct to hold the SPI configurations */
+    struct device* zdev;  /**< Zephyr device driver object */
+    struct device* pinmux_dev; /**< pinmux device driver object */
+    /*@}*/
+};
+
+/**
  * A structure representing aio pin.
  */
 struct _aio {

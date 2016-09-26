@@ -132,10 +132,10 @@ mraa_board_t* mraa_intel_arduino_101_sss()
     mraa_set_pininfo(b,  7, 20, "IO7",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  8, 16, "IO8",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  9,  3, "IO9",  (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+    mraa_set_pininfo(b, 10,  0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
+    mraa_set_pininfo(b, 11,  3, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
+    mraa_set_pininfo(b, 12,  1, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
+    mraa_set_pininfo(b, 13,  2, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 1, 0, 0, 0 });
     mraa_set_pininfo(b, 0, 10, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
     mraa_set_pininfo(b, 1, 11, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
     mraa_set_pininfo(b, 2, 12, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });

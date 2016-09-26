@@ -33,7 +33,7 @@
 
 #include "mraa/aio.h"
 // #include "mraa/common.h"
-// #include "mraa/spi.h"
+#include "mraa/spi.h"
 #include "mraa/i2c.h"
 #include "mraa/gpio.h"
 #include "mraa/pwm.h"
