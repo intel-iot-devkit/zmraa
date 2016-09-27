@@ -27,6 +27,7 @@
 
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
+#include "version.h"
 #include <device.h>
 #include <string.h>
 #include <sys_clock.h>
@@ -93,12 +94,16 @@ mraa_uart_get_dev_path(mraa_uart_context dev)
 mraa_result_t
 mraa_uart_set_baudrate(mraa_uart_context dev, unsigned int baud)
 {
+#if KERNELVERSION >= 0x1050000
     int ret = uart_line_ctrl_set(dev->zdev, LINE_CTRL_BAUD_RATE, baud);
     if (ret == 0) {
         return MRAA_SUCCESS;
     } else {
         return MRAA_ERROR_UNSPECIFIED;
     }
+#else
+    return MRAA_ERROR_FEATURE_NOT_SUPPORTED;
+#endif
 }
 
 // to be set from config file for now, maybe in the future if the line control
