@@ -68,3 +68,14 @@ config  MRAA_UART
         default n
         help
           This option enables support for MRAA UART
+
+config  MRAA_SPI
+        bool
+        prompt "Mraa SPI function support"
+        select SPI
+        select GPIO
+        select MRAA
+        select PINMUX
+        default n
+        help
+          This option enables support for MRAA SPI
