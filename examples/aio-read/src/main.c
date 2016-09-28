@@ -1,5 +1,5 @@
 /*
- * Author: Abhishek Malik <brendan.le.foll@intel.com>
+ * Author: Abhishek Malik <abhishek.malik@intel.com>
  * Copyright (c) 2016 Intel Corporation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
