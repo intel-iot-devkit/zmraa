@@ -24,14 +24,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
-#include <pwm.h>
-#include <misc/util.h>
-#include <pinmux.h>
-#include <string.h>
 #include "mraa/pwm.h"
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
+#include <misc/util.h>
+#include <pinmux.h>
+#include <pwm.h>
+#include <stdlib.h>
+#include <string.h>
 
 #if defined(CONFIG_STDOUT_CONSOLE)
 #include <stdio.h>
@@ -43,8 +43,8 @@
 /* about 1 second
    this calculation is based on that fact that
    one clock cycle comes to be about 31.25 ns */
-#define MAX_PERIOD	32000000
-#define DEFAULT_DUTY_CYCLE    0.5
+#define MAX_PERIOD 32000000
+#define DEFAULT_DUTY_CYCLE 0.5
 
 #if defined(CONFIG_PWM)
 #if defined(CONFIG_PWM_QMSI)
@@ -72,11 +72,12 @@ mraa_pwm_init(int pin)
     mraa_pwm_context dev = (mraa_pwm_context) malloc(sizeof(struct _pwm));
     dev->pin = pin;
     dev->phy_pin = board->pins[pin].pwm.pinmap;
-    dev->zdev = device_get_binding(PWM_DEVICE_NAME);
-    if(dev->zdev == NULL)
+    dev->zdev = device_get_binding("PWM_0");
+    if (dev->zdev == NULL)
         return NULL;
     dev->period = MAX_PERIOD;
     dev->duty_percentage = DEFAULT_DUTY_CYCLE;
+    printf("successfully completed init\n");
     return dev;
 }
 
@@ -90,23 +91,22 @@ mraa_pwm_init_raw(int chipid, int pin)
 mraa_result_t
 mraa_pwm_write(mraa_pwm_context dev, float percentage)
 {
-    if(percentage < 0.0){
+    if (percentage < 0.0) {
         percentage = 0.0;
-    }
-    else if(percentage > 1.0){
+    } else if (percentage > 1.0) {
         percentage = 1.0;
     }
     dev->duty_percentage = percentage;
 
 #if defined(CONFIG_PWM_QMSI)
-    uint8_t pwm_duty_val = (uint8_t) (100*percentage);
-    if(pwm_pin_set_duty_cycle(dev->zdev, dev->phy_pin, pwm_duty_val) != 0){
+    uint8_t pwm_duty_val = (uint8_t)(100 * percentage);
+    if (pwm_pin_set_duty_cycle(dev->zdev, dev->phy_pin, pwm_duty_val) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
 #elif defined(CONFIG_PWM_DW)
-    uint32_t on_time = (uint32_t) (percentage*dev->period);
+    uint32_t on_time = (uint32_t)(percentage * dev->period);
     uint32_t off_time = dev->period - on_time;
-    if(pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, off_time) != 0){
+    if (pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, off_time) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
 #endif
@@ -117,13 +117,11 @@ mraa_pwm_write(mraa_pwm_context dev, float percentage)
 float
 mraa_pwm_read(mraa_pwm_context dev)
 {
-    if(dev->duty_percentage > 1.0){
+    if (dev->duty_percentage > 1.0) {
         return 1.0;
-    }
-    else if(dev->duty_percentage < 0.0){
+    } else if (dev->duty_percentage < 0.0) {
         return 0.0;
-    }
-    else{
+    } else {
         return dev->duty_percentage;
     }
 }
@@ -131,23 +129,23 @@ mraa_pwm_read(mraa_pwm_context dev)
 mraa_result_t
 mraa_pwm_period(mraa_pwm_context dev, float seconds)
 {
-    return mraa_pwm_period_ms(dev, seconds*1000);
+    return mraa_pwm_period_ms(dev, seconds * 1000);
 }
 
 mraa_result_t
 mraa_pwm_period_ms(mraa_pwm_context dev, int ms)
 {
-    return mraa_pwm_period_us(dev, ms*1000);
+    return mraa_pwm_period_us(dev, ms * 1000);
 }
 
 mraa_result_t
 mraa_pwm_period_us(mraa_pwm_context dev, int us)
 {
-    dev->period = 32*us;
+    dev->period = 32 * us;
 #if defined(CONFIG_PWM_QMSI)
-    // the qmsi function deals in us so we don't need the
-    // number of cycles for this calculation.
-    if(pwm_pin_set_period(dev->zdev, dev->phy_pin, us) != 0){
+// the qmsi function deals in us so we don't need the
+// number of cycles for this calculation.
+    if (pwm_pin_set_period(dev->zdev, dev->phy_pin, us) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
 #elif defined(CONFIG_PWM_DW)
@@ -162,26 +160,28 @@ mraa_pwm_period_us(mraa_pwm_context dev, int us)
 mraa_result_t
 mraa_pwm_pulsewidth(mraa_pwm_context dev, float seconds)
 {
-    return mraa_pwm_pulsewidth_ms(dev, seconds*1000);
+    return mraa_pwm_pulsewidth_ms(dev, seconds * 1000);
 }
 
 mraa_result_t
 mraa_pwm_pulsewidth_ms(mraa_pwm_context dev, int ms)
 {
-    return mraa_pwm_pulsewidth_us(dev, ms*1000);
+    return mraa_pwm_pulsewidth_us(dev, ms * 1000);
 }
 
 mraa_result_t
 mraa_pwm_pulsewidth_us(mraa_pwm_context dev, int us)
 {
-    uint32_t on_time = 32*us;
-    if(on_time > dev->period){
+    uint32_t on_time = 32 * us;
+    if (on_time > dev->period) {
         // the pulsewidth cannot be greater than the period
         return MRAA_ERROR_UNSPECIFIED;
     }
-    if(pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, dev->period-on_time) != 0){
+    int ret = pwm_pin_set_values(dev->zdev, dev->phy_pin, 0, on_time);
+    if (ret != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
+
     return MRAA_SUCCESS;
 }
 
