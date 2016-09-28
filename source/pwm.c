@@ -27,6 +27,7 @@
 #include "mraa/pwm.h"
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
+#include "version.h"
 #include <misc/util.h>
 #include <pinmux.h>
 #include <pwm.h>
@@ -145,9 +146,12 @@ mraa_pwm_period_us(mraa_pwm_context dev, int us)
 #if defined(CONFIG_PWM_QMSI)
 // the qmsi function deals in us so we don't need the
 // number of cycles for this calculation.
+// API CHANGES FROM 1.4 TO 1.5
+#if KERNELVERSION >= 0x1050000
     if (pwm_pin_set_period(dev->zdev, dev->phy_pin, us) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
+#endif
 #elif defined(CONFIG_PWM_DW)
     // nothing to do as of now
     // need to figure out if they put in a function for the
@@ -177,7 +181,12 @@ mraa_pwm_pulsewidth_us(mraa_pwm_context dev, int us)
         // the pulsewidth cannot be greater than the period
         return MRAA_ERROR_UNSPECIFIED;
     }
+// API CHANGES FROM 1.4 TO 1.5
+#if KERNELVERSION >= 0x1050000
     int ret = pwm_pin_set_values(dev->zdev, dev->phy_pin, 0, on_time);
+#elif KERNELVERSION <= 0x1040000
+    int ret = pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, dev->period - on_time);
+#endif
     if (ret != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
