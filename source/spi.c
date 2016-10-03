@@ -191,6 +191,8 @@ mraa_spi_write_word(mraa_spi_context dev, uint16_t data)
     if (ret == 0) {
         return ret_data;
     }
+
+    return -1;
 }
 
 uint8_t*
