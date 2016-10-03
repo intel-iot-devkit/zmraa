@@ -167,6 +167,8 @@ mraa_spi_write(mraa_spi_context dev, uint8_t data)
     if (ret == 0) {
         return ret_data;
     }
+
+    return -1;
 }
 
 int
