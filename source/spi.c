@@ -1,6 +1,7 @@
 /*
  * Author: Thomas Ingleby <thomas.c.ingleby@intel.com>
  * Contributions: Abhishek Malik <abhishek.malik@intel.com>
+ *                Jon Trulson <jtrulson@ics.com>
  * Copyright (c) 2014 Intel Corporation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -70,6 +71,8 @@ mraa_spi_init(int bus)
     struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
+        free(dev);
+        return NULL;
     }
     pinmux_pin_set(pinmux_dev, 42, PINMUX_FUNC_B);
     pinmux_pin_set(pinmux_dev, 43, PINMUX_FUNC_B);
@@ -87,6 +90,8 @@ mraa_spi_init(int bus)
 
     if (spi_configure(dev->zdev, dev->config) != 0) {
         printf("Unable to configure the SPI Driver\n");
+        free(conf);
+        free(dev);
         return NULL;
     }
 
