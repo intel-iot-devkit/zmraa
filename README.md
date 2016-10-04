@@ -34,7 +34,7 @@ BOARD=quark_d2000_crb
 
 ```
 source $ZEPHYR_BASE/zephyr-env.sh
-cd lib/mraa/examples/shell
+cd ext/lib/mraa/examples/shell
 make BOARD=arduino_101 menuconfig
 ```
 
