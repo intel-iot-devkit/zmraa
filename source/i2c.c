@@ -25,12 +25,10 @@
 
 #include <i2c.h>
 #include <string.h>
+#include <stdlib.h>
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
 #include "mraa/i2c.h"
-
-static struct _i2c _internali2c[CONFIG_MRAA_I2C_COUNT];
-static struct _i2c tmp_i2c_dev;
 
 
 mraa_i2c_context
@@ -69,12 +67,7 @@ mraa_i2c_init(int bus)
         }
     }
 
-    mraa_i2c_context dev = &_internali2c[bus];
-    mraa_i2c_context tmp = mraa_i2c_init_raw(plat->i2c_bus[bus].bus_id);
-    if (tmp == NULL)
-        return NULL;
-    memcpy(dev, tmp, sizeof(struct _i2c));
-    return dev;
+    return mraa_i2c_init_raw(plat->i2c_bus[bus].bus_id);
 }
 
 
@@ -82,11 +75,18 @@ mraa_i2c_context
 mraa_i2c_init_raw(unsigned int bus)
 {
     char device_name[8];
-    mraa_i2c_context dev = &tmp_i2c_dev;
+    mraa_i2c_context dev = (mraa_i2c_context) malloc(sizeof(struct _i2c));
+    if (!dev)
+    {
+        printf("%s: context allocation failed\n", __FUNCTION__);
+        return NULL;
+    }
+
     sprintf(device_name, "I2C_%d", bus);
     dev->zdev = device_get_binding(device_name);
     if (dev->zdev == NULL) {
         printf("Failed to get binding for %s\n", device_name);
+        free(dev);
         return NULL;
     }
     dev->busnum = bus;
@@ -95,7 +95,10 @@ mraa_i2c_init_raw(unsigned int bus)
     dev->zcfg.bits.speed = I2C_SPEED_STANDARD;
     dev->zcfg.bits.is_master_device = 1;
     if (i2c_configure(dev->zdev, dev->zcfg.raw) != 0)
+    {
+        free(dev);
         return NULL;
+    }
     return dev;
 }
 
@@ -213,6 +216,7 @@ mraa_i2c_update_byte_data(mraa_i2c_context dev, const uint16_t mask, const uint8
 mraa_result_t
 mraa_i2c_stop(mraa_i2c_context dev)
 {
+    free(dev);
     return MRAA_SUCCESS;
 }
 
