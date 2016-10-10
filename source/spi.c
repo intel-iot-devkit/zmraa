@@ -77,6 +77,7 @@ mraa_spi_init(int bus)
     pinmux_pin_set(pinmux_dev, 42, PINMUX_FUNC_B);
     pinmux_pin_set(pinmux_dev, 43, PINMUX_FUNC_B);
     pinmux_pin_set(pinmux_dev, 44, PINMUX_FUNC_B);
+    pinmux_pin_set(pinmux_dev, 45, PINMUX_FUNC_B);
 
     dev->busnum = bus;
     dev->zdev = device_get_binding(SPI_DRV_NAME);
