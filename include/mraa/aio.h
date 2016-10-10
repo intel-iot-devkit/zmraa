@@ -34,6 +34,10 @@
 #include "common.h"
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Opaque pointer definition to the internal struct _aio. This context refers
  * to one single AIO pin on the board.
@@ -91,5 +95,9 @@ mraa_result_t mraa_aio_set_bit(mraa_aio_context dev, int bits);
  * @return bit value mraa is set return from the read function
  */
 int mraa_aio_get_bit(mraa_aio_context dev);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -34,6 +34,10 @@
 #include "common.h"
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _gpio* mraa_gpio_context;
 
 /**
@@ -190,5 +194,8 @@ int mraa_gpio_get_pin(mraa_gpio_context dev);
  */
 int mraa_gpio_get_pin_raw(mraa_gpio_context dev);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

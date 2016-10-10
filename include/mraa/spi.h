@@ -38,6 +38,10 @@
  * @snippet spi_mcp4261.c Interesting
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -187,3 +191,6 @@ mraa_result_t mraa_spi_bit_per_word(mraa_spi_context dev, unsigned int bits);
  */
 mraa_result_t mraa_spi_stop(mraa_spi_context dev);
 
+#ifdef __cplusplus
+}
+#endif
