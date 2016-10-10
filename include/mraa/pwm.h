@@ -22,7 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#ifndef __MRAA_PWM_H__
+#define __MRAA_PWM_H__
 
 /**
  * @file
@@ -182,4 +183,6 @@ int mraa_pwm_get_min_period(mraa_pwm_context dev);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

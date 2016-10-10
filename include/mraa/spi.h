@@ -22,7 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#ifndef __MRAA_SPI_H__
+#define __MRAA_SPI_H__
 
 /**
  * @file
@@ -193,4 +194,6 @@ mraa_result_t mraa_spi_stop(mraa_spi_context dev);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

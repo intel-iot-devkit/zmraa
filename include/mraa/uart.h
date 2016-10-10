@@ -24,7 +24,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#ifndef __MRAA_UART_H__
+#define __MRAA_UART_H__
 
 /**
  * @file
@@ -178,4 +179,6 @@ mraa_boolean_t mraa_uart_data_available(mraa_uart_context dev, unsigned int mill
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

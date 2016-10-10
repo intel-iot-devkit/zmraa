@@ -22,7 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#pragma once
+#ifndef __MRAA_COMMON_H__
+#define __MRAA_COMMON_H__
 
 #include <stdint.h>
 #include "types.h"
@@ -273,4 +274,6 @@ mraa_result_t mraa_add_subplatform(mraa_platform_t subplatformtype, const char* 
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

@@ -21,7 +21,8 @@
  * IN THE SOFTWARE.
  */
 
-#pragma once
+#ifndef __MRAA_TYPES_H__
+#define __MRAA_TYPES_H__
 
 /** @file
  *
@@ -110,4 +111,6 @@ typedef enum {
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

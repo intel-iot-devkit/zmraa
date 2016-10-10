@@ -22,7 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#ifndef __MRAA_I2C_H__
+#define __MRAA_I2C_H__
 
 /**
  * @file
@@ -192,4 +193,6 @@ mraa_result_t mraa_i2c_stop(mraa_i2c_context dev);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
