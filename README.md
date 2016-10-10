@@ -21,7 +21,7 @@ git clone git@github.com:intel-iot-devkit/zmraa.git mraa
 Then you need to apply [zmraa.patch](zmraa.patch) to add the configuration entries
 ```
 cd $ZEPHYR_BASE
-git am zmraa.patch
+git am ext/lib/mraa/zmraa.patch
 ```
 
 Build GPIO Example
