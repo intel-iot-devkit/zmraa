@@ -50,12 +50,19 @@ static int edge_flags = 0;
 
 
 /*
-Use container_of macro to get gpio context as per advice from ivan.briano@intel.com on 5/13/16.
-henry.bruce: Callback function signatures usually include a "user data" parameter so callback can be given some context.
-             This is missing from gpio_callback_handler_t. Is this by design or an omission?
-ivan.briano: By design, use the callback_handler as a field in your struct and get it in the callback with container_of()
-*/
-static void gpio_internal_callback(struct device *port, struct gpio_callback *cb, uint32_t pins)
+ * Use container_of macro to get gpio context as per advice from
+ * ivan.briano@intel.com on 5/13/16.
+ *
+ * henry.bruce: Callback function signatures usually include a "user
+ *  data" parameter so callback can be given some context.  This is
+ *  missing from gpio_callback_handler_t. Is this by design or an
+ *  omission?
+ *
+ * ivan.briano: By design, use the callback_handler as a field in your
+ *  struct and get it in the callback with container_of()
+ */
+static void gpio_internal_callback(struct device *port,
+                                   struct gpio_callback *cb, uint32_t pins)
 {
     mraa_gpio_context dev = CONTAINER_OF(cb, struct _gpio, zcallback);
     if (dev->isr != NULL)
@@ -79,28 +86,15 @@ mraa_gpio_init(int pin)
         printf("gpio: pin %i not capable of gpio\n", pin);
         return NULL;
     }
-#if 0
-    if (board->pins[pin].gpio.pinmux != -1) {
-	struct device* pinmux_dev = device_get_binding("pinmux");
-        printf("phew\n");
-	if (!pinmux_dev) {
-            printf("error\n");
-            return NULL;
-        }
-	if (pinmux_pin_set(pinmux_dev, board->pins[pin].gpio.pinmap, board->pins[pin].gpio.pinmux) != 0) {
-            printf("error2\n");
-            return NULL;
-	}
-    }
-#endif
     if (board->pins[pin].gpio.mux_total > 0) {
         if (mraa_setup_mux_mapped(board->pins[pin].gpio) != MRAA_SUCCESS) {
             return NULL;
         }
     }
     mraa_gpio_context dev = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
-    if (dev)
+    if (dev) {
         dev->pin = pin;
+    }
     return dev;
 }
 
@@ -108,22 +102,21 @@ mraa_gpio_context
 mraa_gpio_init_raw(int gpiopin)
 {
     mraa_gpio_context dev = (mraa_gpio_context)malloc(sizeof(struct _gpio));
-    if (!dev)
-    {
+    if (!dev) {
         printf("%s: context allocation failed\n", __FUNCTION__);
         return NULL;
     }
 
     dev->phy_pin = gpiopin;
     dev->zdev = device_get_binding(GPIO_DRV_NAME);
-    if (dev->zdev == NULL)
-    {
+    if (dev->zdev == NULL) {
         free(dev);
         return NULL;
     }
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, GPIO_DIR_OUT);
     if (ret) {
-        printf("Error %d configuring %s pin %d\n", ret, GPIO_DRV_NAME, dev->phy_pin);
+        printf("Error %d configuring %s pin %d\n", ret,
+               GPIO_DRV_NAME, dev->phy_pin);
         free(dev);
         return NULL;
     }
@@ -207,7 +200,8 @@ mraa_gpio_write(mraa_gpio_context dev, int value)
 
 
 mraa_result_t
-mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(void*), void* args)
+mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode,
+              void (*fptr)(void*), void* args)
 {
     if (MRAA_SUCCESS != mraa_gpio_edge_mode(dev, edge_mode)) {
         return MRAA_ERROR_UNSPECIFIED;
@@ -220,7 +214,8 @@ mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(vo
     }
     dev->isr = fptr;
     dev->isr_args = args;
-    gpio_init_callback(&(dev->zcallback), gpio_internal_callback, BIT(dev->phy_pin));
+    gpio_init_callback(&(dev->zcallback), gpio_internal_callback,
+                       BIT(dev->phy_pin));
     ret = gpio_add_callback(dev->zdev, &(dev->zcallback));
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;
@@ -235,7 +230,8 @@ mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(vo
 mraa_result_t
 mraa_gpio_isr_exit(mraa_gpio_context dev)
 {
-    return gpio_pin_disable_callback(dev->zdev, dev->phy_pin) ? MRAA_ERROR_UNSPECIFIED : MRAA_SUCCESS;
+    return gpio_pin_disable_callback(dev->zdev, dev->phy_pin)
+        ? MRAA_ERROR_UNSPECIFIED : MRAA_SUCCESS;
 }
 
 
