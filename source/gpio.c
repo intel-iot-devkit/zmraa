@@ -46,8 +46,6 @@
 #define GPIO_DRV_NAME "GPIO_0"
 #endif
 
-static struct _gpio _internalgpios[CONFIG_MRAA_PIN_COUNT];
-static struct _gpio tmp_context;
 static int edge_flags = 0;
 
 
@@ -100,24 +98,33 @@ mraa_gpio_init(int pin)
             return NULL;
         }
     }
-    mraa_gpio_context dev = &_internalgpios[pin];
-    mraa_gpio_context tmp = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
-    memcpy(dev, tmp, sizeof(struct _gpio));
-    dev->pin = pin;
+    mraa_gpio_context dev = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
+    if (dev)
+        dev->pin = pin;
     return dev;
 }
 
 mraa_gpio_context
 mraa_gpio_init_raw(int gpiopin)
 {
-    mraa_gpio_context dev = &tmp_context;
+    mraa_gpio_context dev = (mraa_gpio_context)malloc(sizeof(struct _gpio));
+    if (!dev)
+    {
+        printf("%s: context allocation failed\n", __FUNCTION__);
+        return NULL;
+    }
+
     dev->phy_pin = gpiopin;
     dev->zdev = device_get_binding(GPIO_DRV_NAME);
     if (dev->zdev == NULL)
+    {
+        free(dev);
         return NULL;
+    }
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, GPIO_DIR_OUT);
     if (ret) {
         printf("Error %d configuring %s pin %d\n", ret, GPIO_DRV_NAME, dev->phy_pin);
+        free(dev);
         return NULL;
     }
     return dev;
@@ -269,5 +276,7 @@ mraa_gpio_get_pin_raw(mraa_gpio_context dev)
 mraa_result_t
 mraa_gpio_close(mraa_gpio_context dev)
 {
-    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+    free(dev);
+
+    return MRAA_SUCCESS;
 }
