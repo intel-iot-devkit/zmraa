@@ -67,6 +67,8 @@ mraa_spi_init(int bus)
 {
     mraa_spi_context dev = (mraa_spi_context) malloc(sizeof(struct _spi));
 
+// SPI is available by default on the ARC core
+#if defined(CONFIG_BOARD_ARDUINO_101)
     // pinmux configuring required here
     struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
     if (pinmux_dev == NULL) {
@@ -79,6 +81,9 @@ mraa_spi_init(int bus)
     pinmux_pin_set(pinmux_dev, 44, PINMUX_FUNC_B);
     pinmux_pin_set(pinmux_dev, 45, PINMUX_FUNC_B);
 
+    dev->pinmux_dev = pinmux_dev;
+#endif
+
     dev->busnum = bus;
     dev->zdev = device_get_binding(SPI_DRV_NAME);
     spi_config_ptr conf = (spi_config_ptr) malloc(sizeof(struct spi_config));
@@ -86,8 +91,6 @@ mraa_spi_init(int bus)
     conf->config = SPI_MODE_CPOL | SPI_MODE_CPHA | (8 << 4);
     conf->max_sys_freq = SPI_MAX_CLK_FREQ_250KHZ;
     dev->config = conf;
-
-    dev->pinmux_dev = pinmux_dev;
 
     if (spi_configure(dev->zdev, dev->config) != 0) {
         printf("Unable to configure the SPI Driver\n");
