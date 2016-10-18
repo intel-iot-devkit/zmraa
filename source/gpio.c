@@ -38,14 +38,15 @@
 #include "mraa_internal_types.h"
 
 
-#if defined(CONFIG_GPIO_DW_0)
-#define GPIO_DRV_NAME CONFIG_GPIO_DW_0_NAME
-#elif defined(CONFIG_GPIO_QMSI_0)
+#if defined(CONFIG_GPIO_QMSI)
 #define GPIO_DRV_NAME CONFIG_GPIO_QMSI_0_NAME
+#elif defined(CONFIG_GPIO_QMSI_SS_0)
+#define GPIO_DRV_NAME CONFIG_GPIO_QMSI_SS_0_NAME
+#elif defined(CONFIG_GPIO_QMSI_SS_1)
+#define GPIO_DRV_NAME CONFIG_GPIO_QMSI_SS_1_NAME
 #else
 #define GPIO_DRV_NAME "GPIO_0"
 #endif
-
 static int edge_flags = 0;
 
 
@@ -82,6 +83,50 @@ mraa_gpio_init(int pin)
         printf("gpio: pin %i beyond platform definition\n", pin);
         return NULL;
     }
+
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for pinmux\n");
+        return NULL;
+    }
+
+#if defined(CONFIG_BOARD_ARDUINO_101)
+    if (pin == 3) {
+        pinmux_pin_set(pinmux_dev, 63, PINMUX_FUNC_C);
+        mraa_set_pininfo(board, 3, 17, "IO3", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    } else if (pin == 5) {
+        pinmux_pin_set(pinmux_dev, 64, PINMUX_FUNC_C);
+        mraa_set_pininfo(board, 5, 15, "IO5", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    } else {
+        printf("Pin %d not enabled/Can't be enabled\n", pin);
+        return NULL;
+    }
+#endif
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS)
+    if (pin == 14) {
+        pinmux_pin_set(pinmux_dev, 10, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 14, 2, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 15) {
+        pinmux_pin_set(pinmux_dev, 11, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 15, 3, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 16) {
+        pinmux_pin_set(pinmux_dev, 12, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 16, 4, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 17) {
+        pinmux_pin_set(pinmux_dev, 13, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 17, 5, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 18) {
+        pinmux_pin_set(pinmux_dev, 14, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 18, 6, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+    } else if (pin == 19) {
+        pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 19, 1, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+    } else {
+        printf("Pin %d not enabled/Can't be enabled\n", pin);
+        return NULL;
+    }
+#endif
+
     if (board->pins[pin].capabilites.gpio != 1) {
         printf("gpio: pin %i not capable of gpio\n", pin);
         return NULL;
