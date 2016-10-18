@@ -61,6 +61,47 @@ mraa_aio_init(unsigned int pin)
         return NULL;
     }
 
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for pinmux\n");
+        return NULL;
+    }
+
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS)
+    if (pin == 0) {
+        pinmux_pin_set(pinmux_dev, 10, PINMUX_FUNC_B);
+    } else if (pin == 1) {
+        pinmux_pin_set(pinmux_dev, 11, PINMUX_FUNC_B);
+    } else if (pin == 2) {
+        pinmux_pin_set(pinmux_dev, 12, PINMUX_FUNC_B);
+    } else if (pin == 3) {
+        pinmux_pin_set(pinmux_dev, 13, PINMUX_FUNC_B);
+    } else if (pin == 4) {
+        pinmux_pin_set(pinmux_dev, 14, PINMUX_FUNC_B);
+    } else if (pin == 5) {
+        pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_B);
+    } else if (pin == 10) {
+        // or IO10
+        pinmux_pin_set(pinmux_dev, 0, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 10, 0, "A8", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 11) {
+        // or IO11
+        pinmux_pin_set(pinmux_dev, 3, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 11, 3, "A9", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 12) {
+        // or IO12
+        pinmux_pin_set(pinmux_dev, 1, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 12, 1, "A10", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 13) {
+        // or IO13
+        pinmux_pin_set(pinmux_dev, 2, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 13, 2, "A11", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    } else {
+        printf("Pin %d not enabled/Can't be enabled\n", pin);
+        return NULL;
+    }
+#endif
+
     if(board->pins[pin].capabilites.aio != 1){
         return NULL;
     }
