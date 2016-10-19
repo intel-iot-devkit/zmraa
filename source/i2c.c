@@ -26,6 +26,7 @@
 #include <i2c.h>
 #include <string.h>
 #include <stdlib.h>
+#include <pinmux.h>
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
 #include "mraa/i2c.h"
@@ -44,6 +45,21 @@ mraa_i2c_init(int bus)
         // syslog(LOG_ERR, "Above i2c bus count");
         return NULL;
     }
+
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for pinmux\n");
+        return NULL;
+    }
+
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS)
+    if (bus == 0) {
+        pinmux_pin_set(pinmux_dev, 14, PINMUX_FUNC_B);
+        pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 4, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+        mraa_set_pininfo(board, 5, 9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+    }
+#endif
 
     if (board->i2c_bus[bus].bus_id == -1) {
         // syslog(LOG_ERR, "Invalid i2c bus, moving to default i2c bus");
