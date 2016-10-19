@@ -66,6 +66,32 @@ mraa_pwm_init(int pin)
     if (pin < 0 || pin >= board->phy_pin_count) {
         return NULL;
     }
+
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for pinmux\n");
+        return NULL;
+    }
+
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_ARDUINO_101)
+    if (pin == 3) {
+        pinmux_pin_set(pinmux_dev, 63, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 3, 0, "IO3", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    } else if (pin == 5) {
+        pinmux_pin_set(pinmux_dev, 64, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 5, 1, "IO5", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    } else if (pin == 6) {
+        pinmux_pin_set(pinmux_dev, 65, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 6, 2, "IO6", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    } else if (pin == 9) {
+        pinmux_pin_set(pinmux_dev, 66, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 9, 3, "IO9", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    } else {
+        printf("Pin %d not enabled/Can't be enabled\n", pin);
+        return NULL;
+    }
+#endif
+
     if (board->pins[pin].capabilites.pwm != 1) {
         return NULL;
     }
