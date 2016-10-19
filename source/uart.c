@@ -33,6 +33,7 @@
 #include <sys_clock.h>
 #include <uart.h>
 #include <zephyr.h>
+#include <pinmux.h>
 
 #include "mraa/uart.h"
 
@@ -49,6 +50,29 @@
 mraa_uart_context
 mraa_uart_init(int uart)
 {
+
+    mraa_board_t* board = plat;
+
+    if (board == NULL) {
+        printf("uart: platform not initialised\n");
+        return NULL;
+    }
+
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for pinmux\n");
+        return NULL;
+    }
+
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined (CONFIG_BOARD_ARDUINO_101)
+    if(uart == 0){
+        pinmux_pin_set(pinmux_dev, 17, PINMUX_FUNC_C);
+        pinmux_pin_set(pinmux_dev, 16, PINMUX_FUNC_C);
+        mraa_set_pininfo(board,  0, 17, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 1 });
+        mraa_set_pininfo(board,  1, 16, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 1 });
+    }
+#endif
+
     mraa_uart_context dev = (mraa_uart_context) malloc(sizeof(struct _uart));
     dev->zdev = device_get_binding(UART_DEVICE);
     dev->block = 1;
