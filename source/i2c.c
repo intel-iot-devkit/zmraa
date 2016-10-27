@@ -56,6 +56,8 @@ mraa_i2c_init(int bus)
     if (bus == 0) {
         pinmux_pin_set(pinmux_dev, 14, PINMUX_FUNC_B);
         pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_B);
+        pinmux_pin_pullup(pinmux_dev, 14, PINMUX_FUNC_B);
+        pinmux_pin_pullup(pinmux_dev, 9, PINMUX_FUNC_B);
         mraa_set_pininfo(board, 4, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
         mraa_set_pininfo(board, 5, 9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
     }
