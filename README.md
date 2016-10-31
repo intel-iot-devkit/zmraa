@@ -9,6 +9,67 @@ Supported APIs
 -----------------
 * GPIO
 * I2C
+* AIO
+* PWM
+* I2C
+* SPI
+
+Protocols per Core: Arduino 101
+-------------------------------
+In general almost every protocol mentioned above is present on each core.
+However, that stops being the case when you look at it from the POV of whats
+present on the Arduino headers. The following table lists the protocols that
+are present on the **Quark core** and exposed via the headers:
+
+| Protocol |           Comments             |
+|----------|--------------------------------|
+|   AIO    | Not present                    |
+|   GPIO   | Present                        |
+|   PWM    | Present                        |
+|   I2C    | Not present                    |
+|   UART   | Present                        |
+|   SPI    | Present                        |
+
+Protocols available from the **ARC core**
+
+| Protocol |           Comments             |
+|----------|--------------------------------|
+|   AIO    | Present                        |
+|   GPIO   | Present                        |
+|   PWM    | Present                        |
+|   I2C    | Present                        |
+|   UART   | Not present                    |
+|   SPI    | Present(Only internally)       |
+
+Pin Availability on Arduino 101 via ZMRAA
+-----------------------------------------
+The 101 there are atleast 69 pins that can be configured. ZMRAA tries to provide
+access to as many as possible. Most of the pins exposed on the headers of the
+Arduino 101 can be accessed via both the cores - Quark and ARC, but there are a
+few pins and protocols that can be accessed from only one of the cores. To see
+which protocol is available on which core please check the concerning section.
+
+A look at the pins accessible via the **x86 core:**
+**GPIO** - D2-D5, D7, D8, D10-D13
+**PWM** - D3, D5, D6, D9
+**UART** - D0(RX), D1(TX)
+**SPI** - D11(MOSI), D12(MISO), D13(SCK) | CS via GPIO
+
+Pins accessible via the **ARC core:**
+**GPIO** - D14-D19 (These are analog pins A0-A5 numbered 14-19)
+*ex: mraa_gpio_init(14); in this case pin A0 would be used as a digital pin*
+*    mraa_gpio_init(15); in this case its pin A1 and so on and so forth*
+
+**AIO** - A0-A5, D10-D13
+*you can number the digital pins as they are: mraa_aio_init(10)*
+*This initializes pin D10*
+
+**PWM** - D3, D5, D6, D9
+**I2C** - I2C pins on the board
+**SPI** - Not exposed externally, but has access to the internal BMI160
+
+*If a protocol and its corresponding pins have not been mentioned under a*
+*particular core then that protocol is not available on that core.*
 
 Adding ZMRAA to Zephyr
 ----------------------
