@@ -104,3 +104,9 @@ Now build the sample.
 ```
 make BOARD=arduino_101 
 ```
+
+And upload it to the board by running:
+
+```bash
+dfu-util -R -a x86_app -D outdir/zephyr.bin
+```
