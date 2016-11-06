@@ -76,7 +76,7 @@ Adding ZMRAA to Zephyr
 
 ```
 cd zephyr/ext/lib
-git clone git@github.com:intel-iot-devkit/zmraa.git mraa
+git clone https://github.com/intel-iot-devkit/zmraa.git mraa
 ```
 
 Then you need to apply [zmraa.patch](zmraa.patch) to add the configuration entries
