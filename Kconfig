@@ -1,4 +1,4 @@
-# Kconfig - Cryptography primitive options for TinyCrypt
+# Kconfig - Configuration options for mraa library
 
 #
 # Copyright (c) 2015 Intel Corporation
