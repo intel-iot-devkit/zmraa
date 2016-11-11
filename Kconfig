@@ -23,6 +23,7 @@ menuconfig  MRAA
         select PINMUX
         select PINMUX_DEV
         select PINMUX_DEV_QMSI
+        select NEWLIB_LIBC
         help
           This option enables the mraa lib
 
