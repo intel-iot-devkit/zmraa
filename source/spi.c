@@ -133,7 +133,13 @@ mraa_spi_mode(mraa_spi_context dev, mraa_spi_mode_t mode)
 mraa_result_t
 mraa_spi_frequency(mraa_spi_context dev, int hz)
 {
-    uint32_t freq = 32000000 / hz;
+    uint32_t freq = 0;
+    if (hz > 0) {
+        freq = sys_clock_hw_cycles_per_sec / hz;
+    } else {
+        return MRAA_ERROR_INVALID_PARAMETER;
+    }
+
     dev->config->max_sys_freq = freq;
     if (spi_configure(dev->zdev, dev->config) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
