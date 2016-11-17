@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
-#include <string.h>
 #include <adc.h>
 #include <misc/util.h>
 #include <pinmux.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "mraa/aio.h"
 #include "mraa_internal.h"
@@ -53,11 +53,11 @@ mraa_aio_context
 mraa_aio_init(unsigned int pin)
 {
     mraa_board_t* board = plat;
-    if(board == NULL){
+    if (board == NULL) {
         return NULL;
     }
 
-    if(pin < 0 || pin >= board->phy_pin_count){
+    if (pin < 0 || pin >= board->phy_pin_count) {
         return NULL;
     }
 
@@ -67,6 +67,30 @@ mraa_aio_init(unsigned int pin)
         return NULL;
     }
 
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB)
+    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    // confused about the numbering of digital pins lower than 6
+    // This needs to be resolved.
+    if (pin == 7) {
+        pinmux_pin_set(d2k_pinmux_dev, 8, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 7, 8, "IO7", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 8) {
+        pinmux_pin_set(d2k_pinmux_dev, 9, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 8, 9, "IO8", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 10) {
+        pinmux_pin_set(d2k_pinmux_dev, 0, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 10, 0, "IO10", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 11) {
+        pinmux_pin_set(d2k_pinmux_dev, 17, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 11, 17, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 12) {
+        pinmux_pin_set(d2k_pinmux_dev, 18, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 12, 18, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 13) {
+        pinmux_pin_set(d2k_pinmux_dev, 16, PINMUX_FUNC_B);
+        mraa_set_pininfo(board, 13, 16, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    }
+#endif
 #if defined(CONFIG_BOARD_ARDUINO_101_SSS)
     if (pin == 0) {
         pinmux_pin_set(pinmux_dev, 10, PINMUX_FUNC_B);
@@ -81,19 +105,15 @@ mraa_aio_init(unsigned int pin)
     } else if (pin == 5) {
         pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_B);
     } else if (pin == 10) {
-        // or IO10
         pinmux_pin_set(pinmux_dev, 0, PINMUX_FUNC_B);
         mraa_set_pininfo(board, 10, 0, "A8", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
     } else if (pin == 11) {
-        // or IO11
         pinmux_pin_set(pinmux_dev, 3, PINMUX_FUNC_B);
         mraa_set_pininfo(board, 11, 3, "A9", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
     } else if (pin == 12) {
-        // or IO12
         pinmux_pin_set(pinmux_dev, 1, PINMUX_FUNC_B);
         mraa_set_pininfo(board, 12, 1, "A10", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
     } else if (pin == 13) {
-        // or IO13
         pinmux_pin_set(pinmux_dev, 2, PINMUX_FUNC_B);
         mraa_set_pininfo(board, 13, 2, "A11", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
     } else {
@@ -102,14 +122,14 @@ mraa_aio_init(unsigned int pin)
     }
 #endif
 
-    if(board->pins[pin].capabilites.aio != 1){
+    if (board->pins[pin].capabilites.aio != 1) {
         return NULL;
     }
 
     mraa_aio_context dev = (mraa_aio_context) malloc(sizeof(struct _aio));
     dev->phy_pin = board->pins[pin].aio.pinmap;
     dev->zdev = device_get_binding(ADC_DEVICE_NAME);
-    if(dev->zdev == NULL)
+    if (dev->zdev == NULL)
         return NULL;
 
     dev->value_bit = DEFAULT_BITS;
@@ -119,8 +139,8 @@ mraa_aio_init(unsigned int pin)
     sample->sampling_delay = 12;
     sample->channel_id = dev->phy_pin;
     sample->buffer_length = 4;
-    uint8_t *seq_buffer;
-    seq_buffer = (uint8_t *) malloc(sizeof(uint8_t)*4);
+    uint8_t* seq_buffer;
+    seq_buffer = (uint8_t*) malloc(sizeof(uint8_t) * 4);
     sample->buffer = seq_buffer;
     table->entries = sample;
     table->num_entries = 1;
@@ -150,9 +170,9 @@ mraa_aio_read(mraa_aio_context dev)
     uint32_t value;
     uint32_t shifter_value;
 
-    if(adc_read(dev->zdev, dev->table))
+    if (adc_read(dev->zdev, dev->table))
         return -1;
-    value = dev->table->entries->buffer[1]*256 + dev->table->entries->buffer[0];
+    value = dev->table->entries->buffer[1] * 256 + dev->table->entries->buffer[0];
 
     if (dev->value_bit != raw_bits) {
         if (raw_bits > dev->value_bit) {
