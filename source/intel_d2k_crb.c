@@ -91,9 +91,6 @@ mraa_intel_d2k_crb()
     pinmux_pin_set(d2k_pinmux_dev, 19, PINMUX_FUNC_B); // IO6
     pinmux_pin_set(d2k_pinmux_dev, 24, PINMUX_FUNC_A); // IO9
     pinmux_pin_set(d2k_pinmux_dev, 0, PINMUX_FUNC_A);  // IO10
-    pinmux_pin_set(d2k_pinmux_dev, 17, PINMUX_FUNC_A); // IO11
-    pinmux_pin_set(d2k_pinmux_dev, 18, PINMUX_FUNC_A); // IO12
-    pinmux_pin_set(d2k_pinmux_dev, 16, PINMUX_FUNC_A); // IO13
     pinmux_pin_set(d2k_pinmux_dev, 3, PINMUX_FUNC_B);  // A0
     pinmux_pin_set(d2k_pinmux_dev, 4, PINMUX_FUNC_B);  // A1
     pinmux_pin_set(d2k_pinmux_dev, 14, PINMUX_FUNC_B); // A2

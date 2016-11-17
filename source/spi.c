@@ -45,7 +45,6 @@
 #define PRINT printk
 #endif
 
-#define SPI_DRV_NAME "SPI_1"
 #define SPI_SLAVE 1
 
 #define SET_MODE_MASK 0xfffffffc
@@ -53,10 +52,13 @@
 // Arduino 101 has a 32 MHz clock
 // D2000 has a 32 MHz clock
 #if defined(CONFIG_BOARD_ARDUINO_101)
+#define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
 #elif defined(CONFIG_BOARD_ARDUINO_101_SSS)
+#define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
+#define SPI_DRV_NAME "SPI_0"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
 #endif
 
