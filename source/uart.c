@@ -29,15 +29,19 @@
 #include "mraa_internal_types.h"
 #include "version.h"
 #include <device.h>
+#include <pinmux.h>
 #include <string.h>
 #include <sys_clock.h>
 #include <uart.h>
 #include <zephyr.h>
-#include <pinmux.h>
 
 #include "mraa/uart.h"
 
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_ARDUINO_101)
 #define UART_DEVICE "UART_1"
+#elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
+#define UART_DEVICE "UART_0"
+#endif
 
 #if defined(CONFIG_STDOUT_CONSOLE)
 #include <stdio.h>
@@ -64,12 +68,12 @@ mraa_uart_init(int uart)
         return NULL;
     }
 
-#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined (CONFIG_BOARD_ARDUINO_101)
-    if(uart == 0){
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_ARDUINO_101)
+    if (uart == 0) {
         pinmux_pin_set(pinmux_dev, 17, PINMUX_FUNC_C);
         pinmux_pin_set(pinmux_dev, 16, PINMUX_FUNC_C);
-        mraa_set_pininfo(board,  0, 17, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 1 });
-        mraa_set_pininfo(board,  1, 16, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 1 });
+        mraa_set_pininfo(board, 0, 17, "IO0", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 1 });
+        mraa_set_pininfo(board, 1, 16, "IO1", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 1 });
     }
 #endif
 
