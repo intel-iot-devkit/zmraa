@@ -28,14 +28,14 @@
 #include <misc/printk.h>
 #define printf printk
 #endif
-#include <stdlib.h>
-#include <string.h>
-#include <gpio.h>
-#include <misc/util.h>
-#include <pinmux.h>
 #include "mraa/gpio.h"
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
+#include <gpio.h>
+#include <misc/util.h>
+#include <pinmux.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 #if defined(CONFIG_GPIO_QMSI)
@@ -62,8 +62,8 @@ static int edge_flags = 0;
  * ivan.briano: By design, use the callback_handler as a field in your
  *  struct and get it in the callback with container_of()
  */
-static void gpio_internal_callback(struct device *port,
-                                   struct gpio_callback *cb, uint32_t pins)
+static void
+gpio_internal_callback(struct device* port, struct gpio_callback* cb, uint32_t pins)
 {
     mraa_gpio_context dev = CONTAINER_OF(cb, struct _gpio, zcallback);
     if (dev->isr != NULL)
@@ -90,6 +90,31 @@ mraa_gpio_init(int pin)
         return NULL;
     }
 
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB)
+    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    if (pin == 14) {
+        pinmux_pin_set(d2k_pinmux_dev, 3, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 14, 3, "A0", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 15) {
+        pinmux_pin_set(d2k_pinmux_dev, 4, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 15, 4, "A1", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 16) {
+        pinmux_pin_set(d2k_pinmux_dev, 14, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 16, 14, "A2", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 17) {
+        pinmux_pin_set(d2k_pinmux_dev, 15, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 17, 15, "A3", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    } else if (pin == 18) {
+        pinmux_pin_set(d2k_pinmux_dev, 7, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 18, 7, "A4", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    } else if (pin == 19) {
+        pinmux_pin_set(d2k_pinmux_dev, 6, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 19, 6, "A5", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
+    } else if (pin < 2 || pin >= 20) {
+        printf("Pin %d not enabled/Can't be enabled\n", pin);
+        return NULL;
+    }
+#endif
 #if defined(CONFIG_BOARD_ARDUINO_101)
     if (pin == 3) {
         pinmux_pin_set(pinmux_dev, 63, PINMUX_FUNC_C);
@@ -154,7 +179,7 @@ mraa_gpio_init(int pin)
 mraa_gpio_context
 mraa_gpio_init_raw(int gpiopin)
 {
-    mraa_gpio_context dev = (mraa_gpio_context)malloc(sizeof(struct _gpio));
+    mraa_gpio_context dev = (mraa_gpio_context) malloc(sizeof(struct _gpio));
     if (!dev) {
         printf("%s: context allocation failed\n", __FUNCTION__);
         return NULL;
@@ -168,8 +193,7 @@ mraa_gpio_init_raw(int gpiopin)
     }
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, GPIO_DIR_OUT);
     if (ret) {
-        printf("Error %d configuring %s pin %d\n", ret,
-               GPIO_DRV_NAME, dev->phy_pin);
+        printf("Error %d configuring %s pin %d\n", ret, GPIO_DRV_NAME, dev->phy_pin);
         free(dev);
         return NULL;
     }
@@ -240,21 +264,20 @@ mraa_gpio_read(mraa_gpio_context dev)
     if (gpio_pin_read(dev->zdev, dev->phy_pin, &value))
         return -1;
     else
-        return (int)value;
+        return (int) value;
 }
 
 mraa_result_t
 mraa_gpio_write(mraa_gpio_context dev, int value)
 {
-     if (gpio_pin_write(dev->zdev, dev->phy_pin, (uint32_t)value))
+    if (gpio_pin_write(dev->zdev, dev->phy_pin, (uint32_t) value))
         return MRAA_ERROR_UNSPECIFIED;
-     return MRAA_SUCCESS;
+    return MRAA_SUCCESS;
 }
 
 
 mraa_result_t
-mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode,
-              void (*fptr)(void*), void* args)
+mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(void*), void* args)
 {
     if (MRAA_SUCCESS != mraa_gpio_edge_mode(dev, edge_mode)) {
         return MRAA_ERROR_UNSPECIFIED;
@@ -267,8 +290,7 @@ mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode,
     }
     dev->isr = fptr;
     dev->isr_args = args;
-    gpio_init_callback(&(dev->zcallback), gpio_internal_callback,
-                       BIT(dev->phy_pin));
+    gpio_init_callback(&(dev->zcallback), gpio_internal_callback, BIT(dev->phy_pin));
     ret = gpio_add_callback(dev->zdev, &(dev->zcallback));
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;
@@ -283,8 +305,7 @@ mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode,
 mraa_result_t
 mraa_gpio_isr_exit(mraa_gpio_context dev)
 {
-    return gpio_pin_disable_callback(dev->zdev, dev->phy_pin)
-        ? MRAA_ERROR_UNSPECIFIED : MRAA_SUCCESS;
+    return gpio_pin_disable_callback(dev->zdev, dev->phy_pin) ? MRAA_ERROR_UNSPECIFIED : MRAA_SUCCESS;
 }
 
 
