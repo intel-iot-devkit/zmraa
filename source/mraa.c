@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <mraa.h>
 #include "board_config.h"
 #include "mraa_internal_types.h"
+#include <mraa.h>
+#include <stdio.h>
+#include <string.h>
 
 #if defined(CONFIG_BOARD_ARDUINO_101)
 #include "arduino_101.h"
@@ -90,22 +90,23 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
 
     for (mi = 0; mi < meta.mux_total; mi++) {
 
-        switch(meta.mux[mi].pincmd) {
-            case PINCMD_UNDEFINED:              // used for backward compatibility
-                if(meta.mux[mi].pin != last_pin) {
+        switch (meta.mux[mi].pincmd) {
+            case PINCMD_UNDEFINED: // used for backward compatibility
+                if (meta.mux[mi].pin != last_pin) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
                     }
                     mux_i = mraa_gpio_init_raw(meta.mux[mi].pin);
-                    if (mux_i == NULL) return MRAA_ERROR_INVALID_HANDLE;
+                    if (mux_i == NULL)
+                        return MRAA_ERROR_INVALID_HANDLE;
                     last_pin = meta.mux[mi].pin;
                 }
                 // this function will sometimes fail, however this is not critical as
                 // long as the write succeeds - Test case galileo gen2 pin2
                 mraa_gpio_dir(mux_i, MRAA_GPIO_OUT);
                 ret = mraa_gpio_write(mux_i, meta.mux[mi].value);
-                if(ret != MRAA_SUCCESS) {
+                if (ret != MRAA_SUCCESS) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
@@ -115,19 +116,20 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
                 break;
 
             case PINCMD_SET_VALUE:
-                if(meta.mux[mi].pin != last_pin) {
+                if (meta.mux[mi].pin != last_pin) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
                     }
                     mux_i = mraa_gpio_init_raw(meta.mux[mi].pin);
-                    if (mux_i == NULL) return MRAA_ERROR_INVALID_HANDLE;
+                    if (mux_i == NULL)
+                        return MRAA_ERROR_INVALID_HANDLE;
                     last_pin = meta.mux[mi].pin;
                 }
 
                 ret = mraa_gpio_write(mux_i, meta.mux[mi].value);
 
-                if(ret != MRAA_SUCCESS) {
+                if (ret != MRAA_SUCCESS) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
@@ -137,19 +139,20 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
                 break;
 
             case PINCMD_SET_DIRECTION:
-                if(meta.mux[mi].pin != last_pin) {
+                if (meta.mux[mi].pin != last_pin) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
                     }
                     mux_i = mraa_gpio_init_raw(meta.mux[mi].pin);
-                    if (mux_i == NULL) return MRAA_ERROR_INVALID_HANDLE;
+                    if (mux_i == NULL)
+                        return MRAA_ERROR_INVALID_HANDLE;
                     last_pin = meta.mux[mi].pin;
                 }
 
                 ret = mraa_gpio_dir(mux_i, meta.mux[mi].value);
 
-                if(ret != MRAA_SUCCESS) {
+                if (ret != MRAA_SUCCESS) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
@@ -159,22 +162,23 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
                 break;
 
             case PINCMD_SET_IN_VALUE:
-                if(meta.mux[mi].pin != last_pin) {
+                if (meta.mux[mi].pin != last_pin) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
                     }
                     mux_i = mraa_gpio_init_raw(meta.mux[mi].pin);
-                    if (mux_i == NULL) return MRAA_ERROR_INVALID_HANDLE;
+                    if (mux_i == NULL)
+                        return MRAA_ERROR_INVALID_HANDLE;
                     last_pin = meta.mux[mi].pin;
                 }
 
                 ret = mraa_gpio_dir(mux_i, MRAA_GPIO_IN);
 
-                if(ret == MRAA_SUCCESS)
+                if (ret == MRAA_SUCCESS)
                     ret = mraa_gpio_write(mux_i, meta.mux[mi].value);
 
-                if(ret != MRAA_SUCCESS) {
+                if (ret != MRAA_SUCCESS) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
@@ -184,22 +188,23 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
                 break;
 
             case PINCMD_SET_OUT_VALUE:
-                if(meta.mux[mi].pin != last_pin) {
+                if (meta.mux[mi].pin != last_pin) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
                     }
                     mux_i = mraa_gpio_init_raw(meta.mux[mi].pin);
-                    if (mux_i == NULL) return MRAA_ERROR_INVALID_HANDLE;
+                    if (mux_i == NULL)
+                        return MRAA_ERROR_INVALID_HANDLE;
                     last_pin = meta.mux[mi].pin;
                 }
 
                 ret = mraa_gpio_dir(mux_i, MRAA_GPIO_OUT);
 
-                if(ret == MRAA_SUCCESS)
+                if (ret == MRAA_SUCCESS)
                     ret = mraa_gpio_write(mux_i, meta.mux[mi].value);
 
-                if(ret != MRAA_SUCCESS) {
+                if (ret != MRAA_SUCCESS) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
@@ -209,19 +214,20 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
                 break;
 
             case PINCMD_SET_MODE:
-                if(meta.mux[mi].pin != last_pin) {
+                if (meta.mux[mi].pin != last_pin) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
                     }
                     mux_i = mraa_gpio_init_raw(meta.mux[mi].pin);
-                    if (mux_i == NULL) return MRAA_ERROR_INVALID_HANDLE;
+                    if (mux_i == NULL)
+                        return MRAA_ERROR_INVALID_HANDLE;
                     last_pin = meta.mux[mi].pin;
                 }
 
                 ret = mraa_gpio_mode(mux_i, meta.mux[mi].value);
 
-                if(ret != MRAA_SUCCESS) {
+                if (ret != MRAA_SUCCESS) {
                     if (mux_i != NULL) {
                         mraa_gpio_owner(mux_i, 0);
                         mraa_gpio_close(mux_i);
@@ -234,7 +240,8 @@ mraa_setup_mux_mapped(mraa_pin_t meta)
                 break;
 
             default:
-                // syslog(LOG_NOTICE, "mraa_setup_mux_mapped: wrong command %d on pin %d with value %d", meta.mux[mi].pincmd, meta.mux[mi].pin, meta.mux[mi].value);
+                // syslog(LOG_NOTICE, "mraa_setup_mux_mapped: wrong command %d on pin %d with value
+                // %d", meta.mux[mi].pincmd, meta.mux[mi].pin, meta.mux[mi].value);
                 break;
         }
     }
@@ -360,7 +367,7 @@ mraa_get_platform_pin_count(uint8_t platform_offset)
     if (platform_offset == MRAA_MAIN_PLATFORM_OFFSET)
         return mraa_get_pin_count();
     else
-    	return 0;
+        return 0;
 }
 
 
@@ -371,7 +378,7 @@ mraa_get_pin_name(int pin)
         return NULL;
     if (pin > (plat->phy_pin_count - 1) || pin < 0)
         return NULL;
-    return (char*)plat->pins[pin].name;
+    return (char*) plat->pins[pin].name;
 }
 
 int
@@ -407,10 +414,10 @@ mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, 
 {
     mraa_pininfo_t* pin_info = &board->pins[mraa_pin];
     pin_info->gpio.pinmap = zephyr_pin;
-#if defined(CONFIG_BOARD_ARDUINO_101_SSS)
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_D2000_CRB)
     pin_info->aio.pinmap = zephyr_pin;
 #endif
-#if defined(CONFIG_BOARD_ARDUINO_101)
+#if defined(CONFIG_BOARD_ARDUINO_101) || defined(CONFIG_BOARD_QUARK_D2000_CRB)
     pin_info->uart.pinmap = zephyr_pin;
 #endif
     pin_info->pwm.pinmap = zephyr_pin;
@@ -430,5 +437,5 @@ mraa_set_board_config(mraa_board_t* board)
     board->aio_count = CONFIG_MRAA_AIO_COUNT;
     board->i2c_bus_count = CONFIG_MRAA_I2C_COUNT;
     board->spi_bus_count = CONFIG_MRAA_SPI_COUNT;
-    board->uart_dev_count= CONFIG_MRAA_UART_COUNT;
+    board->uart_dev_count = CONFIG_MRAA_UART_COUNT;
 }
