@@ -19,27 +19,16 @@ Protocols per Core: Arduino 101
 In general almost every protocol mentioned above is present on each core.
 However, that stops being the case when you look at it from the POV of what's
 present on the Arduino headers. The following table lists the protocols that
-are present on the **Quark core** and exposed via the headers:
+are present per core and exposed via the headers:
 
-| Protocol |           Comments             |
-|----------|--------------------------------|
-|   AIO    | Not present                    |
-|   GPIO   | Present                        |
-|   PWM    | Present                        |
-|   I2C    | Not present                    |
-|   UART   | Present                        |
-|   SPI    | Present                        |
-
-Protocols available from the **ARC core**
-
-| Protocol |           Comments             |
-|----------|--------------------------------|
-|   AIO    | Present                        |
-|   GPIO   | Present                        |
-|   PWM    | Present                        |
-|   I2C    | Present                        |
-|   UART   | Not present                    |
-|   SPI    | Present (Only internally)      |
+| Protocol |           ARC                  |           QUARK                |
+|----------|--------------------------------|--------------------------------|
+|   AIO    | Present                        | Not present                    |
+|   GPIO   | Present                        | Present                        |
+|   PWM    | Present                        | Present                        |
+|   I2C    | Present                        | Not present                    |
+|   UART   | Not present                    | Present                        |
+|   SPI    | Present (Only internally)      | Present                        |
 
 Pin Availability on Arduino 101 via ZMRAA
 -----------------------------------------
