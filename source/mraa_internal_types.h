@@ -30,9 +30,6 @@
 #include <i2c.h>
 #include <pinmux.h>
 
-// Pack structures to save memory
-#pragma pack(push, 1)
-
 /**
  * A structure representing a gpio pin.
  */
@@ -278,4 +275,3 @@ typedef struct _board_t {
     /*@}*/
 } mraa_board_t;
 
-#pragma pack(pop)
