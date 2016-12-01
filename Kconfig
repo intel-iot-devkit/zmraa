@@ -1,4 +1,4 @@
-# Kconfig - Cryptography primitive options for TinyCrypt
+# Kconfig - Configuration options for mraa library
 
 #
 # Copyright (c) 2015 Intel Corporation
@@ -16,20 +16,22 @@
 # limitations under the License.
 #
 
-config  MRAA
+menuconfig  MRAA
         bool
         prompt "Mraa Support"
         default n
         select PINMUX
         select PINMUX_DEV
         select PINMUX_DEV_QMSI
+        select NEWLIB_LIBC
         help
           This option enables the mraa lib
 
+if MRAA
+
 config  MRAA_GPIO
         bool
-        prompt "Mraa GPIO function support"
-        select MRAA
+        prompt "GPIO function support"
         select GPIO
         default n
         help
@@ -37,8 +39,7 @@ config  MRAA_GPIO
 
 config  MRAA_AIO
         bool
-        prompt "Mraa AIO function support"
-        select MRAA
+        prompt "AIO function support"
         select AIO
         default n
         help
@@ -46,9 +47,8 @@ config  MRAA_AIO
 
 config  MRAA_I2C
         bool
-        prompt "Mraa I2C function support"
+        prompt "I2C function support"
         select I2C
-        select MRAA
         select MRAA_GPIO
         default n
         help
@@ -56,29 +56,28 @@ config  MRAA_I2C
 
 config  MRAA_PWM
         bool
-        prompt "Mraa PWM function support"
+        prompt "PWM function support"
         select PWM
-        select MRAA
         default n
         help
           This option enables support for MRAA PWM
 
 config  MRAA_UART
         bool
-        prompt "Mraa UART function support"
+        prompt "UART function support"
         select UART
-        select MRAA
         default n
         help
           This option enables support for MRAA UART
 
 config  MRAA_SPI
         bool
-        prompt "Mraa SPI function support"
+        prompt "SPI function support"
         select SPI
         select GPIO
-        select MRAA
-        select PINMUX
         default n
         help
           This option enables support for MRAA SPI
+
+endif
+
