@@ -1,5 +1,10 @@
 ZMRAA is an implementation of the MRAA API for Zephyr project.
 
+Releases
+-----------------
+* v1.0.0 - Initial release of ZMRAA targeting Zephyr 1.6
+  Includes preliminary support for AIO, GPIO, I2C, PWM, SPI, and UART
+
 Supported Devices
 -----------------
 * Arduino 101
