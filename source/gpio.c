@@ -84,14 +84,15 @@ mraa_gpio_init(int pin)
         return NULL;
     }
 
-    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         return NULL;
     }
 
+
 #if defined(CONFIG_BOARD_QUARK_D2000_CRB)
-    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pin == 14) {
         pinmux_pin_set(d2k_pinmux_dev, 3, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 14, 3, "A0", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });

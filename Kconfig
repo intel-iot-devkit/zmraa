@@ -21,8 +21,7 @@ config  MRAA
         prompt "Mraa Support"
         default n
         select PINMUX
-        select PINMUX_DEV
-        select PINMUX_DEV_QMSI
+        select PINMUX_QMSI
         help
           This option enables the mraa lib
 

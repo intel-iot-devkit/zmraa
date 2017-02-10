@@ -61,14 +61,14 @@ mraa_aio_init(unsigned int pin)
         return NULL;
     }
 
-    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         return NULL;
     }
 
 #if defined(CONFIG_BOARD_QUARK_D2000_CRB)
-    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     // confused about the numbering of digital pins lower than 6
     // This needs to be resolved.
     if (pin == 7) {

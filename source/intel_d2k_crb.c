@@ -81,7 +81,7 @@ static mraa_board_t _board;
 mraa_board_t*
 mraa_intel_d2k_crb()
 {
-    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (d2k_pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux for D2000\n");
         return NULL;

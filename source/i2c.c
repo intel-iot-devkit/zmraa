@@ -46,7 +46,7 @@ mraa_i2c_init(int bus)
         return NULL;
     }
 
-    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         return NULL;

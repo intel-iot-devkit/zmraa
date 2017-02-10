@@ -68,7 +68,7 @@ mraa_pwm_init(int pin)
     }
 
 #if defined(CONFIG_BOARD_QUARK_D2000_CRB)
-    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pin == 6) {
         pinmux_pin_set(d2k_pinmux_dev, 19, PINMUX_FUNC_C);
         mraa_set_pininfo(board, 6, 0, "IO6", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
@@ -78,7 +78,7 @@ mraa_pwm_init(int pin)
     }
 #endif
 #if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_ARDUINO_101)
-    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         return NULL;

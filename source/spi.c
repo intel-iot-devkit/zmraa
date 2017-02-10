@@ -72,7 +72,7 @@ mraa_spi_init(int bus)
 // SPI is available by default on the ARC core
 #if defined(CONFIG_BOARD_ARDUINO_101)
     // pinmux configuring required here
-    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_DEV_NAME);
+    struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         free(dev);
