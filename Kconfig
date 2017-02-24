@@ -67,6 +67,7 @@ config  MRAA_UART
         prompt "Mraa UART function support"
         select UART
         select MRAA
+        select UART_LINE_CTRL
         default n
         help
           This option enables support for MRAA UART
