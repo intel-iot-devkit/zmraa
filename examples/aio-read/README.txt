@@ -14,14 +14,13 @@ The first 10 values it reads are of 10 bits and the following 10 are 12 bits.
 Running it:
 
 make pristine
-
-make BOARD=arduino_101_sss_factory
+make 
 
 If using DFU-UTIL:
 dfu-util -a sensor_core -D outdir/zephyr.bin -R
 
 Or if using JTAG/Flyswatter:
-make BOARD=arduino_101_sss_factory flash
+make BOARD=arduino_101_sss flash
 
 --------------------------------------------------------------------------------
 
