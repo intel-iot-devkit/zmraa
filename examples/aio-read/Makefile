@@ -1,5 +1,5 @@
 KERNEL_TYPE = nano
-BOARD ?= arduino_101_sss_factory
+BOARD ?= arduino_101_sss
 CONF_FILE = prj_aio.conf
 
 include ${ZEPHYR_BASE}/Makefile.inc
