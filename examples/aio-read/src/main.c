@@ -26,10 +26,9 @@
 #include <misc/util.h>
 #include <mraa/aio.h>
 #include <pinmux.h>
-#include <sys_clock.h>
 #include <zephyr.h>
 
-#define SLEEPTICKS SECONDS(1)
+#define SLEEPTIME 1000
 #if defined(CONFIG_STDOUT_CONSOLE)
 #include <stdio.h>
 #define PRINT printf
@@ -39,35 +38,40 @@
 #endif
 
 void
+mraa_sleep_ms(int ms)
+{
+    struct k_timer timer;
+    k_timer_init(&timer, NULL, NULL);
+    k_timer_start(&timer, ms, 0);
+    k_timer_status_sync(&timer);
+}
+
+void
 main(void)
 {
-    struct nano_timer timer;
-    void* timer_data[1];
-    nano_timer_init(&timer, timer_data);
+    // Wait 1 sec before starting
+    mraa_sleep_ms(500);
+
     // Calling the MRAA init function which initializes the board specific details
-    if (mraa_init() != MRAA_SUCCESS) {
+    if (mraa_init() == MRAA_SUCCESS) {
+        printf("Detected %s\n", mraa_get_platform_name());
+    } else {
         printf("Unable to init MRAA successfully\n");
+        return;
     }
     // Initializing the MRAA AIO layer
     mraa_aio_context dev = mraa_aio_init(0);
-    int val;
-    for (int i = 0; i < 10; i++) {
-        val = mraa_aio_read(dev);
+    if (dev == NULL) {
+        printf("Unable to initialize AIO\n");
+        return;
+    }
+    printf("Reading %d bit values\n", mraa_aio_get_bit(dev));
+
+     while (1) {
+        int val = mraa_aio_read(dev);
         printf("AIO Value: %d\n", val);
         // adding a delay of 1 sec between consecutive reads
-        nano_timer_start(&timer, SLEEPTICKS);
-        nano_timer_test(&timer, TICKS_UNLIMITED);
-    }
-    // increasing to 12 bits, it is 10 bits by default
-    if (mraa_aio_set_bit(dev, 12) != MRAA_SUCCESS) {
-        printf("Unable to set bits to 12\n");
-    }
-    for (int i = 0; i < 10; i++) {
-        val = mraa_aio_read(dev);
-        printf("AIO Value: %d\n", val);
-        // adding a delay of 1 sec between consecutive reads
-        nano_timer_start(&timer, SLEEPTICKS);
-        nano_timer_test(&timer, TICKS_UNLIMITED);
+        mraa_sleep_ms(SLEEPTIME);
     }
     if (mraa_aio_close(dev) != MRAA_SUCCESS) {
         printf("error closing analog port\n");
