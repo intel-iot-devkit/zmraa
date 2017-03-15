@@ -32,7 +32,7 @@ extern "C" {
 #include "mraa_internal_types.h"
 
 extern mraa_board_t* plat;
-static struct device* d2k_pinmux_dev;
+struct device* d2k_pinmux_dev;
 
 /**
  * Takes in pin information and sets up the multiplexors.
