@@ -90,6 +90,12 @@ mraa_aio_init(unsigned int pin)
         pinmux_pin_set(d2k_pinmux_dev, 16, PINMUX_FUNC_B);
         mraa_set_pininfo(board, 13, 16, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
     }
+
+    // The analog pins conflicted with the GPIO pins 0-5 prior to this change
+    // causing the GPIO pins 0-5 not to work on the d2000. 
+    if (pin >=0 && pin <= 5) {
+        pin = pin+14;
+    }
 #endif
 #if defined(CONFIG_BOARD_ARDUINO_101_SSS)
     if (pin == 0) {

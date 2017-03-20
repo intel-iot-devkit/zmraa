@@ -118,12 +118,12 @@ mraa_intel_d2k_crb()
     mraa_set_pininfo(b, 11, 17, "IO11", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 12, 18, "IO12", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 13, 16, "IO13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
-    mraa_set_pininfo(b, 0, 3, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    mraa_set_pininfo(b, 1, 4, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    mraa_set_pininfo(b, 2, 14, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    mraa_set_pininfo(b, 3, 15, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    mraa_set_pininfo(b, 4, 7, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
-    mraa_set_pininfo(b, 5, 6, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+    mraa_set_pininfo(b, 14, 3, "A0  ", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 15, 4, "A1  ", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 16, 14, "A2  ", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 17, 15, "A3  ", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 });
+    mraa_set_pininfo(b, 18, 7, "A4  ", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 1, 1, 0 });
+    mraa_set_pininfo(b, 19, 6, "A5  ", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 1, 1, 0 });
     b->def_i2c_bus = 0;
     b->i2c_bus[0].bus_id = 0;
     b->pins[18].i2c.mux_total = 0;
