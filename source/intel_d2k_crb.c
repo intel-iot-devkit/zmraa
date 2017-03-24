@@ -63,7 +63,7 @@
 /* 21   F21, tck,     gpio_21,     uart_b_rxd   */
 /* 22   F22, tms,     gpio_22,     uart_b_rts   */
 /* 23   F23, tdi,     gpio_23,     uart_b_cts   */
-/* 24   F24, gpio_24, lpd_sig_out, pwm1         */
+/* 24   F24, gpio_24, led_sig_out, pwm1         */
 
 /******** End PINMUX mapping **************************/
 
@@ -88,7 +88,21 @@ mraa_intel_d2k_crb()
     }
 
     // setting up defaults for the d2000 board
+    // neck 2017/03/24 - Can't mux off TDO if we want debug over JTAG
+#ifdef DEBUG
+    // Ensure JTAG enabled for DEBUG
+    pinmux_pin_set(d2k_pinmux_dev, 19, PINMUX_FUNC_A); // TDO
+    pinmux_pin_set(d2k_pinmux_dev, 20, PINMUX_FUNC_A); // TRST
+    pinmux_pin_set(d2k_pinmux_dev, 21, PINMUX_FUNC_A); // TCK
+    pinmux_pin_set(d2k_pinmux_dev, 22, PINMUX_FUNC_A); // TMS
+    pinmux_pin_set(d2k_pinmux_dev, 23, PINMUX_FUNC_A); // TDI
+// Only enable pin 19 as FUNC_B if explicit PWM has been configured,
+// this ensures that the next firmware flash via JTAG does NOT need
+// a bootstall.
+#elif CONFIG_PWM
+    // Use as GPIO/PWM ONLY if CONFIG_PWM has explicitly been set
     pinmux_pin_set(d2k_pinmux_dev, 19, PINMUX_FUNC_B); // IO6
+#endif
     pinmux_pin_set(d2k_pinmux_dev, 24, PINMUX_FUNC_A); // IO9
     pinmux_pin_set(d2k_pinmux_dev, 0, PINMUX_FUNC_A);  // IO10
     pinmux_pin_set(d2k_pinmux_dev, 3, PINMUX_FUNC_B);  // A0
@@ -110,7 +124,11 @@ mraa_intel_d2k_crb()
     mraa_set_pininfo(b, 3, 10, "IO3", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 4, 5, "IO4", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 5, 2, "IO5", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
+#ifdef DEBUG
+    mraa_set_pininfo(b, 6, 19, "IO6", (mraa_pincapabilities_t){ 0, 0, 0, 0, 0, 0, 0, 0 });
+#else
     mraa_set_pininfo(b, 6, 19, "IO6", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+#endif
     mraa_set_pininfo(b, 7, 8, "IO7", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 8, 9, "IO8", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b, 9, 24, "IO9", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
