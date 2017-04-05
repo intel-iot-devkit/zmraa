@@ -101,7 +101,6 @@ mraa_i2c_init_raw(unsigned int bus)
     }
 
     sprintf(device_name, "I2C_%d", bus);
-printf("device name: %s\n", device_name);
     dev->zdev = device_get_binding(device_name);
     if (dev->zdev == NULL) {
         printf("Failed to get binding for %s\n", device_name);
@@ -115,7 +114,6 @@ printf("device name: %s\n", device_name);
     dev->zcfg.bits.is_master_device = 1;
     if (i2c_configure(dev->zdev, dev->zcfg.raw) != 0)
     {
-printf("error in configuring\n");
         free(dev);
         return NULL;
     }

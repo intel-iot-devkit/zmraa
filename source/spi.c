@@ -62,6 +62,10 @@
 #define SPI_MAX_CLK_FREQ_250KHZ 128
 #define SPI_SLAVE 1
 #elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
+#define SPI_DRV_NAME "SPI_0"
+#define SPI_MAX_CLK_FREQ_250KHZ 128
+#define SPI_SLAVE 1
+#elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
 #define SPI_SLAVE 0
@@ -217,9 +221,7 @@ mraa_spi_write_buf(mraa_spi_context dev, uint8_t* data, int length)
 {
     // Since this is a write function only the return will be NULL
     int ret;
-printf("aaaaa\n");
     ret = spi_transceive(dev->zdev, data, length, NULL, 0);
-printf("bbbb\n");
     return NULL;
 }
 
