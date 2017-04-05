@@ -90,7 +90,6 @@ mraa_gpio_init(int pin)
         return NULL;
     }
 
-
 #if defined(CONFIG_BOARD_QUARK_D2000_CRB)
     d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pin == 14) {
@@ -170,6 +169,14 @@ mraa_gpio_init(int pin)
             return NULL;
         }
     }
+
+#if defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
+    if(board->pins[pin].gpio.pinmap >=0 && board->pins[pin].gpio.pinmap <= 28)
+        pinmux_pin_pullup(pinmux_dev, board->pins[pin].gpio.pinmap, PINMUX_FUNC_A);
+    else if(board->pins[pin].gpio.pinmap >=29 && board->pins[pin].gpio.pinmap <=31)
+        pinmux_pin_pullup(pinmux_dev, board->pins[pin].gpio.pinmap, PINMUX_FUNC_B);
+#endif
+
     mraa_gpio_context dev = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
     if (dev) {
         dev->pin = pin;

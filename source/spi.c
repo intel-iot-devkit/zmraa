@@ -45,8 +45,6 @@
 #define PRINT printk
 #endif
 
-#define SPI_SLAVE 1
-
 #define SET_MODE_MASK 0xfffffffc
 
 // Arduino 101 has a 32 MHz clock
@@ -54,12 +52,19 @@
 #if defined(CONFIG_BOARD_ARDUINO_101)
 #define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
+#define SPI_SLAVE 0
 #elif defined(CONFIG_BOARD_ARDUINO_101_SSS)
 #define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
+#define SPI_SLAVE 0
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
 #define SPI_DRV_NAME "SPI_0"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
+#define SPI_SLAVE 1
+#elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
+#define SPI_DRV_NAME "SPI_1"
+#define SPI_MAX_CLK_FREQ_250KHZ 128
+#define SPI_SLAVE 0
 #endif
 
 typedef struct spi_config* spi_config_ptr;
@@ -212,8 +217,9 @@ mraa_spi_write_buf(mraa_spi_context dev, uint8_t* data, int length)
 {
     // Since this is a write function only the return will be NULL
     int ret;
+printf("aaaaa\n");
     ret = spi_transceive(dev->zdev, data, length, NULL, 0);
-
+printf("bbbb\n");
     return NULL;
 }
 
