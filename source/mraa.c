@@ -33,6 +33,10 @@
 #include "arduino_101_sss.h"
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
 #include "intel_d2k_crb.h"
+#elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
+#include "quark_se_devboard.h"
+#elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
+#include "quark_se_sss_devboard.h"
 #else
 #error Board not defined
 #endif
@@ -50,6 +54,10 @@ mraa_init()
     plat = mraa_intel_arduino_101_sss();
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
     plat = mraa_intel_d2k_crb();
+#elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
+    plat = mraa_intel_quark_se_devboard();
+#elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
+    plat = mraa_intel_quark_se_ss_devboard();
 #endif
     return plat != NULL ? MRAA_SUCCESS : MRAA_ERROR_NO_RESOURCES;
 }
@@ -414,10 +422,10 @@ mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, 
 {
     mraa_pininfo_t* pin_info = &board->pins[mraa_pin];
     pin_info->gpio.pinmap = zephyr_pin;
-#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_D2000_CRB)
+#if defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
     pin_info->aio.pinmap = zephyr_pin;
 #endif
-#if defined(CONFIG_BOARD_ARDUINO_101) || defined(CONFIG_BOARD_QUARK_D2000_CRB)
+#if defined(CONFIG_BOARD_ARDUINO_101) || defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
     pin_info->uart.pinmap = zephyr_pin;
 #endif
     pin_info->pwm.pinmap = zephyr_pin;
