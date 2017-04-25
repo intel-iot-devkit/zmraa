@@ -51,6 +51,31 @@
 #define PRINT printk
 #endif
 
+static volatile bool data_transmitted;
+static volatile bool data_arrived;
+
+static void uart_interrupt_handler(struct device *dev) {
+    //printf("coming into interrupt handler\n");
+    uart_irq_update(dev);
+
+    if(uart_irq_tx_ready(dev)) {
+        data_transmitted = true;
+    }
+
+    if(uart_irq_rx_ready(dev)) {
+        //printf("rx is ready\n");
+        data_arrived = true;
+        uart_irq_rx_disable(dev);
+    }
+}
+
+void mraa_ms_delay(uint32_t time) {
+    struct k_timer timer;
+    k_timer_init(&timer, NULL, NULL);
+    k_timer_start(&timer, time, 0);
+    k_timer_status_sync(&timer);
+}
+
 mraa_uart_context
 mraa_uart_init(int uart)
 {
@@ -81,6 +106,10 @@ mraa_uart_init(int uart)
     dev->zdev = device_get_binding(UART_DEVICE);
     dev->block = 1;
 
+#if 1
+    uart_irq_callback_set(dev->zdev, uart_interrupt_handler);
+#endif
+
     return dev;
 }
 
@@ -93,22 +122,14 @@ mraa_uart_init_raw(const char* path)
 int
 mraa_uart_write(mraa_uart_context dev, const char* buf, size_t length)
 {
-    // this isn't the expected implementation, it should be length
-    // instead of length+1. However, the output gets completely
-    // screwed up with the actual length. Need to look into this
-    // to find RC and fix. Current implementation works though.
-    unsigned char ret[length + 1];
-    unsigned char temp;
-    int i = 0;
-    for (i = 0; i < length + 1; i++) {
-        temp = buf[i];
-        ret[i] = uart_poll_out(dev->zdev, temp);
-        if (ret[i] != temp) {
-            return i;
-        }
-    }
+    int i;
+    data_transmitted = false;
 
-    return length;
+    uart_irq_tx_enable(dev->zdev);
+    i = uart_fifo_fill(dev->zdev, buf, length);
+    uart_irq_tx_disable(dev->zdev);
+
+    return i;
 }
 
 mraa_result_t
@@ -145,20 +166,9 @@ mraa_uart_set_flowcontrol(mraa_uart_context dev, mraa_boolean_t xonxoff, mraa_bo
 int
 mraa_uart_read(mraa_uart_context dev, char* buf, size_t length)
 {
-    unsigned char store;
-    int ret, i = 0;
-    for (i = 0; i < length; i++) {
-        ret = uart_poll_in(dev->zdev, &store);
-        if (ret == -1) {
-            return i;
-        } else if (ret == 0) {
-            buf[i] = store;
-        } else {
-            return i;
-        }
-    }
+    data_arrived = false;
 
-    return length;
+    return uart_fifo_read(dev->zdev, buf, length);
 }
 
 // currently not implemented/ to be implemented once there is more clarity about zephyr API
@@ -201,5 +211,18 @@ mraa_uart_stop(mraa_uart_context dev)
 mraa_boolean_t
 mraa_uart_data_available(mraa_uart_context dev, unsigned int millis)
 {
-    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+    int counter = 0;
+    uart_irq_rx_enable(dev->zdev);
+
+    while(data_arrived == false && counter < millis) {
+        counter++;
+        mraa_ms_delay(1);
+    }
+
+    uart_irq_rx_disable(dev->zdev);
+
+    if(data_arrived == true)
+        return true;
+    else
+        return false;
 }
