@@ -179,7 +179,7 @@ typedef struct {
  */
 typedef struct {
     /*@{*/
-    char* name;                         /**< Pin's real world name */
+    char name[MRAA_PIN_NAME_SIZE];              /**< Pin's real world name */
     mraa_pincapabilities_t capabilites; /**< Pin Capabiliites */
 #if CONFIG_MRAA_GPIO_COUNT > 0
     mraa_pin_t gpio; /**< GPIO structure */

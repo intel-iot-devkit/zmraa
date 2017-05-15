@@ -25,31 +25,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <misc/shell.h>
-#include "mraa/common.h"
+#include <shell/shell.h>
 #include "gpio-cmd.h"
 #include "i2c-cmd.h"
+#include "mraa/common.h"
 
+#define MRAA_SHELL_MODULE "mraa"
 
-void
-print_version()
+static int shell_cmd_version(int argc, char* argv[])
 {
-    printf("Version %s on %s\n", mraa_get_version(), mraa_get_platform_name());
+    printf("ZMRAA %s on %s\n", mraa_get_version(), mraa_get_platform_name());
+    return 0;
 }
 
-static void
-shell_cmd_version(int argc, char* argv[])
-{
-    print_version();
-}
-
-static void
-shell_cmd_gpio(int argc, char* argv[])
+static int shell_cmd_gpio(int argc, char* argv[])
 {
     argc--;
     for (int i = 0; i < argc; ++i)
         argv[i] = argv[i+1];
-    if (argc > 0) {
+    if (argc > 0)
+    {
         if (strcmp(argv[0], "help") == 0)
             gpio_cmd_help(argc, argv);
         else if (strcmp(argv[0], "list") == 0)
@@ -60,35 +55,45 @@ shell_cmd_gpio(int argc, char* argv[])
             gpio_cmd_set(argc, argv);
         else if (strcmp(argv[0], "monitor") == 0)
             gpio_cmd_monitor(argc, argv);
-        else {
+        else
+        {
             printf("Unknown gpio command.\n");
             gpio_cmd_help(argc, argv);
         }
-    } else
+    }
+    else
         printf("Must specify gpio command. \n");
+    return 0;
 }
 
-static void
-shell_cmd_i2c(int argc, char* argv[])
+static int shell_cmd_i2c(int argc, char* argv[])
 {
     i2c_process_command(argc, argv);
+    return 0;
 }
 
+const struct shell_cmd commands[] = {
+    {"version", shell_cmd_version, NULL},
+    {"gpio", shell_cmd_gpio, NULL},
+    {"i2c", shell_cmd_i2c, NULL},
+    {NULL, NULL, NULL}};
 
-
-const struct shell_cmd commands[] = { { "version", shell_cmd_version },
-                                      { "gpio", shell_cmd_gpio },
-                                      { "i2c", shell_cmd_i2c },
-                                      { NULL, NULL } };
-
-void
-main(void)
+void main(void)
 {
+    /* Initialize mraa */
     mraa_result_t status = mraa_init();
-    if (status == MRAA_SUCCESS) {
-        print_version();
-        shell_init("mraa> ", commands);
-    } else {
+    if (status != MRAA_SUCCESS)
+    {
         printf("mraa_init() failed with error code %d\n", status);
+        return;
     }
+
+    /* Register this module w/commands */
+    SHELL_REGISTER(MRAA_SHELL_MODULE, commands);
+
+    /* Print the current shell version */
+    shell_cmd_version(0, NULL);
+
+    /* Set the default shell module and initialize */
+    shell_register_default_module(MRAA_SHELL_MODULE);
 }

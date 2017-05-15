@@ -117,12 +117,13 @@
 #include "mraa/gpio.h"
 
 static mraa_board_t _board;
+static const char* platform_name = "Arduino 101 x86";
 
 mraa_board_t* mraa_intel_arduino_101()
 {
     mraa_board_t* b = &_board;
     mraa_set_board_config(b);
-    b->platform_name = "Arduino 101 x86";
+    b->platform_name = platform_name;
     b->platform_type = MRAA_INTEL_ARDUINO_101;
     mraa_set_pininfo(b,  0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 1 });
     mraa_set_pininfo(b,  1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 1 });

@@ -82,33 +82,71 @@ cd $ZEPHYR_BASE
 git am ext/lib/mraa/zmraa.patch
 ```
 
-Build GPIO Example
+ZMRAA Shell Example
 ------------------
-Add mraa and gpio driver to your Zephyr configuration and build sample.
-Select `Device Drivers -> GPIO Drivers -> QMSI GPIO driver` and
-`MRAA -> Mraa GPIO function support`
+The ZMRAA shell example creates a simple Zephyr shell which provides a command set for interacting with ZMRAA GPIOs and I2C busses.  The ZMRAA shell is available on all supported board targets.
 
-Board targets:
+**Board targets:**
 * `BOARD=arduino_101`
 * `BOARD=arduino_101_sss`
 * `BOARD=quark_d2000_crb`
 * `BOARD=quark_se_c1000_devboard`
 * `BOARD=quark_se_c1000_ss_devboard`
 
+### Arduino 101
+Build the image
 ```
 source $ZEPHYR_BASE/zephyr-env.sh
 cd ext/lib/mraa/examples/shell
-make BOARD=arduino_101 menuconfig
+make BOARD=arduino_101
 ```
 
-Now build the sample:
-
+[Flash the target](https://www.zephyrproject.org/doc/boards/x86/arduino_101/doc/board.html#flashing).  After resetting the target, a mraa shell will be available:
 ```
-make BOARD=arduino_101 
+shell> ZMRAA v0.0.3 on Arduino 101 x86
+
+mraa> gpio list
+00     IO0: GPIO UART
+01     IO1: GPIO UART
+02     IO2: GPIO
+03     IO3: GPIO PWM
+...
 ```
 
-And upload it to the board by running:
+### Quark D2000 CRB
+Build the image
+```
+source $ZEPHYR_BASE/zephyr-env.sh
+cd ext/lib/mraa/examples/shell
+make BOARD=quark_d2000_crb
+```
 
-```bash
-dfu-util -R -a x86_app -D outdir/zephyr.bin
+[Flash the target](https://www.zephyrproject.org/doc/boards/x86/arduino_101/doc/board.html#flashing).  After resetting the target, a mraa shell will be available:
+```
+shell> ZMRAA v0.0.3 on Intel D2000 CRB
+mraa> gpio list
+00     IO0: GPIO UART
+01     IO1: GPIO UART
+02     IO2: GPIO
+03     IO3: GPIO
+...
+```
+
+### Quark SE C1000 Development Board
+Build the image
+```
+source $ZEPHYR_BASE/zephyr-env.sh
+cd ext/lib/mraa/examples/shell
+make BOARD=quark_se_c1000_devboard
+```
+
+[Flash the target](https://www.zephyrproject.org/doc/boards/x86/arduino_101/doc/board.html#flashing).  After resetting the target, a mraa shell will be available:
+```
+shell> ZMRAA v0.0.3 on Quark SE Devboard/C1000 x86
+mraa> gpio list
+00        :
+01 VDD_HDR:
+02 VDD_HDR:
+03 AP_UART: GPIO UART
+...
 ```

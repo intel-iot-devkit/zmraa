@@ -115,12 +115,13 @@
 #include "mraa/aio.h"
 
 static mraa_board_t _board;
+static const char* platform_name = "Arduino 101 SSS";
 
 mraa_board_t* mraa_intel_arduino_101_sss()
 {
     mraa_board_t* b = &_board;
     mraa_set_board_config(b);
-    b->platform_name = "Arduino 101 SSS";
+    b->platform_name = platform_name;
     b->platform_type = MRAA_INTEL_ARDUINO_101_SSS;
     mraa_set_pininfo(b,  0,  0, "IO0",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });
     mraa_set_pininfo(b,  1,  3, "IO1",  (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 });

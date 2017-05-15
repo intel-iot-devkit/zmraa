@@ -38,13 +38,6 @@ print_help()
     printf("version           Get mraa version and board name\n");
 }
 
-static void
-print_command_error()
-{
-    printf("Invalid command, options are:\n");
-    print_help();
-}
-
 static int
 list_platform_pins(uint8_t platform_offset)
 {

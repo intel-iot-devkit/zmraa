@@ -430,7 +430,10 @@ mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, 
 #endif
     pin_info->pwm.pinmap = zephyr_pin;
     pin_info->gpio.mux_total = 0;
-    pin_info->name = name;
+    strncpy(pin_info->name, name, MRAA_PIN_NAME_SIZE);
+    // Since the provided name can be any length, ensure that the copied
+    // char array ends with a null terminator
+    pin_info->name[MRAA_PIN_NAME_SIZE - 1] = '\0';
     pin_info->capabilites = caps;
     return MRAA_SUCCESS;
 }

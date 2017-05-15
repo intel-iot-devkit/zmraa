@@ -77,6 +77,7 @@
 #endif
 
 static mraa_board_t _board;
+static const char* platform_name = "Intel D2000 CRB";
 
 mraa_board_t*
 mraa_intel_d2k_crb()
@@ -116,7 +117,7 @@ mraa_intel_d2k_crb()
 
     mraa_board_t* b = &_board;
     mraa_set_board_config(b);
-    b->platform_name = "Intel D2000 CRB";
+    b->platform_name = platform_name;
     b->platform_type = MRAA_INTEL_D2000_CRB;
     mraa_set_pininfo(b, 0, 13, "IO0", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 1 });
     mraa_set_pininfo(b, 1, 12, "IO1", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 1 });

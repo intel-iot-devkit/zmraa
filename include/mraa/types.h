@@ -49,9 +49,11 @@ typedef uint8_t mraa_boolean_t;
  * MRAA supported platform types
  */
 typedef enum {
-    MRAA_INTEL_ARDUINO_101 = 200,    /**< Arduino 101 */
-    MRAA_INTEL_ARDUINO_101_SSS = 201,    /**< Arduino 101 */
-    MRAA_INTEL_D2000_CRB = 202,      /**< Quark D2K CRB */
+    MRAA_INTEL_ARDUINO_101 = 200,           /**< Arduino 101 */
+    MRAA_INTEL_ARDUINO_101_SSS,             /**< Arduino 101 */
+    MRAA_INTEL_D2000_CRB,                   /**< Quark D2K CRB */
+    MRAA_INTEL_QUARK_SE_DEVBOARD,           /**< Quark SE Devboard/C1000 */
+    MRAA_INTEL_QUARK_SE_SSS_DEVBOARD,       /**< Quark SE Devboard/C1000 */
     MRAA_UNKNOWN_PLATFORM =
    299 /**< An unknown platform type, typically will load INTEL_GALILEO_GEN1 */
 } mraa_platform_t;
