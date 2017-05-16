@@ -2,6 +2,8 @@ ZMRAA is an implementation of the MRAA API for Zephyr project.
 
 Releases
 -----------------
+* v1.1.0 - Support for Zephyr 1.7.  Added Quark SE C1000 Development board
+  support.
 * v1.0.0 - Initial release of ZMRAA targeting Zephyr 1.6
   Includes preliminary support for AIO, GPIO, I2C, PWM, SPI, and UART
 
@@ -9,6 +11,7 @@ Supported Devices
 -----------------
 * Arduino 101
 * Quark D2000 CRB
+* Quark SE C1000 Development Board
 
 Supported APIs
 -----------------
@@ -84,8 +87,13 @@ Build GPIO Example
 Add mraa and gpio driver to your Zephyr configuration and build sample.
 Select `Device Drivers -> GPIO Drivers -> QMSI GPIO driver` and
 `MRAA -> Mraa GPIO function support`
-If you use a Quark D2K board then switch `BOARD=arduino_101` for
-`BOARD=quark_d2000_crb`
+
+Board targets:
+* `BOARD=arduino_101`
+* `BOARD=arduino_101_sss`
+* `BOARD=quark_d2000_crb`
+* `BOARD=quark_se_c1000_devboard`
+* `BOARD=quark_se_c1000_ss_devboard`
 
 ```
 source $ZEPHYR_BASE/zephyr-env.sh
