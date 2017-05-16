@@ -52,7 +52,7 @@
 #if defined(CONFIG_BOARD_ARDUINO_101)
 #define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
-#define SPI_SLAVE 0
+#define SPI_SLAVE 1
 #elif defined(CONFIG_BOARD_ARDUINO_101_SSS)
 #define SPI_DRV_NAME "SPI_1"
 #define SPI_MAX_CLK_FREQ_250KHZ 128
@@ -99,7 +99,7 @@ mraa_spi_init(int bus)
     dev->zdev = device_get_binding(SPI_DRV_NAME);
     spi_config_ptr conf = (spi_config_ptr) malloc(sizeof(struct spi_config));
     // only default settings, can be changed by using the other functions provided
-    conf->config = SPI_MODE_CPOL | SPI_MODE_CPHA | (8 << 4);
+    conf->config = (8 << 4);
     conf->max_sys_freq = SPI_MAX_CLK_FREQ_250KHZ;
     dev->config = conf;
 
@@ -120,20 +120,21 @@ mraa_spi_mode(mraa_spi_context dev, mraa_spi_mode_t mode)
 {
     switch (mode) {
         case MRAA_SPI_MODE0:
-            dev->config->config = SET_MODE_MASK & dev->config->config;
+            dev->config->config = (SET_MODE_MASK & dev->config->config);
             break;
         case MRAA_SPI_MODE1:
-            dev->config->config = (SET_MODE_MASK | SPI_MODE_CPHA) & dev->config->config;
+            dev->config->config = (SET_MODE_MASK & dev->config->config) | SPI_MODE_CPHA;
             break;
         case MRAA_SPI_MODE2:
-            dev->config->config = (SET_MODE_MASK | SPI_MODE_CPOL) & dev->config->config;
+            dev->config->config = (SET_MODE_MASK & dev->config->config) | SPI_MODE_CPOL;
+            break;
         case MRAA_SPI_MODE3:
-            dev->config->config = (SET_MODE_MASK | SPI_MODE_CPOL | SPI_MODE_CPHA) & dev->config->config;
+            dev->config->config = (SET_MODE_MASK & dev->config->config) | SPI_MODE_CPOL | SPI_MODE_CPHA;
             break;
         default:
-            dev->config->config = SET_MODE_MASK & dev->config->config;
-            break;
+            dev->config->config = (SET_MODE_MASK & dev->config->config);
     }
+
     if (spi_configure(dev->zdev, dev->config) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
