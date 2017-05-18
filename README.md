@@ -121,7 +121,7 @@ cd ext/lib/mraa/examples/shell
 make BOARD=quark_d2000_crb
 ```
 
-[Flash the target](https://www.zephyrproject.org/doc/boards/x86/arduino_101/doc/board.html#flashing).  After resetting the target, a mraa shell will be available:
+[Flash the target](https://www.zephyrproject.org/doc/boards/x86/quark_d2000_crb/doc/quark_d2000_crb.html#flashing).  After resetting the target, a mraa shell will be available:
 ```
 shell> ZMRAA v0.0.3 on Intel D2000 CRB
 mraa> gpio list
@@ -140,7 +140,11 @@ cd ext/lib/mraa/examples/shell
 make BOARD=quark_se_c1000_devboard
 ```
 
-[Flash the target](https://www.zephyrproject.org/doc/boards/x86/arduino_101/doc/board.html#flashing).  After resetting the target, a mraa shell will be available:
+Flash the target
+```
+make BOARD=quark_se_c1000_devboard flash
+```
+
 ```
 shell> ZMRAA v0.0.3 on Quark SE Devboard/C1000 x86
 mraa> gpio list
