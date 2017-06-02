@@ -153,28 +153,28 @@ mraa_board_t* mraa_intel_quark_se_ss_devboard()
     // GND - 11
     // GND - 12
     // AP_GPIO4_ADC4
-    mraa_set_pininfo(b, 13, 4, "13", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // defaults to GPIO
+    mraa_set_pininfo(b, 13, 4, "13", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // defaults to GPIO
     // AP_GPIO_SS2_ADC10
-    mraa_set_pininfo(b, 14, 2, "14", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
+    mraa_set_pininfo(b, 14, 10, "14", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
     // AP_GPIO5_ADC5
-    mraa_set_pininfo(b, 15, 5, "15", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // defaults to GPIO
+    mraa_set_pininfo(b, 15, 5, "15", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // defaults to GPIO
     // AP_GPIO_SS3_ADC11
-    mraa_set_pininfo(b, 16, 16, "16", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
+    mraa_set_pininfo(b, 16, 11, "16", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
     // AP_GPIO6_ADC6_MUX
-    mraa_set_pininfo(b, 17, 6, "17", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // defaults to GPIO
+    mraa_set_pininfo(b, 17, 6, "17", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // defaults to GPIO
     // AP_GPIO_SS4_ADC12
-    mraa_set_pininfo(b, 18, 18, "18", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
+    mraa_set_pininfo(b, 18, 12, "18", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
     // AP_GPIO_SS14_PLT_CLK_0
     mraa_set_pininfo(b, 19, 14, "19", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }); // defaults to SS GPIO/clk/keep number in mind
     // AP_GPIO_SS5_ADC13
-    mraa_set_pininfo(b, 20, 20, "20", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
+    mraa_set_pininfo(b, 20, 13, "20", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
     // AP_GPIO_SS15_PLT_CLK_1
     mraa_set_pininfo(b, 21, 15, "21", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }); // defaults to SS GPIO/clk/keep number in mind
     // AP_GPIO_SS6_ADC14
-    mraa_set_pininfo(b, 22, 22, "22", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // NA on X86 core
+    mraa_set_pininfo(b, 22, 14, "22", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on X86 core
     // VDD_HDR - 23
     // AP_GPIO_SS7_ADC15
-    mraa_set_pininfo(b, 24, 20, "24", (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
+    mraa_set_pininfo(b, 24, 20, "24", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 }); // NA on x86 core
     // AP_GPIO_SS10_PWM0
     mraa_set_pininfo(b, 25, 0, "25", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
     // VDD_HDR - 26

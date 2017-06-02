@@ -92,71 +92,98 @@ mraa_gpio_init(int pin)
 
 #if defined(CONFIG_BOARD_QUARK_D2000_CRB)
     d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
-    if (pin == 14) {
+    switch(pin) {
+    case 14:
         pinmux_pin_set(d2k_pinmux_dev, 3, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 14, 3, "A0", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 15) {
+        break;
+    case 15:
         pinmux_pin_set(d2k_pinmux_dev, 4, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 15, 4, "A1", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 16) {
+        break;
+    case 16:
         pinmux_pin_set(d2k_pinmux_dev, 14, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 16, 14, "A2", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 17) {
+        break;
+    case 17:
         pinmux_pin_set(d2k_pinmux_dev, 15, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 17, 15, "A3", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 18) {
+        break;
+    case 18:
         pinmux_pin_set(d2k_pinmux_dev, 7, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 18, 7, "A4", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    } else if (pin == 19) {
+        break;
+    case 19:
         pinmux_pin_set(d2k_pinmux_dev, 6, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 19, 6, "A5", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 0, 0 });
-    } else if (pin < 2 || pin >= 20) {
-        printf("Pin %d not enabled/Can't be enabled\n", pin);
-        return NULL;
+        break;
+    default:;
     }
 #endif
 #if defined(CONFIG_BOARD_ARDUINO_101)
-    if (pin == 3) {
-        pinmux_pin_set(pinmux_dev, 63, PINMUX_FUNC_C);
+    switch(pin) {
+    case 3:
+    	pinmux_pin_set(pinmux_dev, 63, PINMUX_FUNC_C);
         mraa_set_pininfo(board, 3, 17, "IO3", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
-    } else if (pin == 5) {
+        break;
+    case 5:
         pinmux_pin_set(pinmux_dev, 64, PINMUX_FUNC_C);
         mraa_set_pininfo(board, 5, 15, "IO5", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
-    } else if (pin == 10) {
+        break;
+    case 10:
         pinmux_pin_set(pinmux_dev, 0, PINMUX_FUNC_A);
-    } else if (pin == 11) {
+        break;
+    case 11:
         pinmux_pin_set(pinmux_dev, 3, PINMUX_FUNC_A);
-    } else if (pin == 12) {
+        break;
+    case 12:
         pinmux_pin_set(pinmux_dev, 1, PINMUX_FUNC_A);
-    } else if (pin == 13) {
+        break;
+    case 13:
         pinmux_pin_set(pinmux_dev, 2, PINMUX_FUNC_A);
-    } else if (pin == 6 || pin == 9 || (pin >= 14 && pin <= 19)) {
+        break;
+    case 6:
+    case 9:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
         printf("Pin %d not enabled/Can't be enabled\n", pin);
         return NULL;
+    default:;
+    	// do nothing
     }
 #endif
 #if defined(CONFIG_BOARD_ARDUINO_101_SSS)
-    if (pin == 14) {
+    switch(pin) {
+    case 14:
         pinmux_pin_set(pinmux_dev, 10, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 14, 2, "A0  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 15) {
+        break;
+    case 15:
         pinmux_pin_set(pinmux_dev, 11, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 15, 3, "A1  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 16) {
+        break;
+    case 16:
         pinmux_pin_set(pinmux_dev, 12, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 16, 4, "A2  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 17) {
+        break;
+    case 17:
         pinmux_pin_set(pinmux_dev, 13, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 17, 5, "A3  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
-    } else if (pin == 18) {
-        pinmux_pin_set(pinmux_dev, 14, PINMUX_FUNC_A);
-        mraa_set_pininfo(board, 18, 6, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
-    } else if (pin == 19) {
+        break;
+    case 18:
         pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_A);
         mraa_set_pininfo(board, 19, 1, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
-    } else {
-        printf("Pin %d not enabled/Can't be enabled\n", pin);
-        return NULL;
+        break;
+    case 19:
+        pinmux_pin_set(pinmux_dev, 9, PINMUX_FUNC_A);
+        mraa_set_pininfo(board, 19, 1, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
+        break;
+    default:;
+    	// do nothing
     }
 #endif
 
@@ -175,6 +202,37 @@ mraa_gpio_init(int pin)
         pinmux_pin_pullup(pinmux_dev, board->pins[pin].gpio.pinmap, PINMUX_FUNC_A);
     else if(board->pins[pin].gpio.pinmap >=29 && board->pins[pin].gpio.pinmap <=31)
         pinmux_pin_pullup(pinmux_dev, board->pins[pin].gpio.pinmap, PINMUX_FUNC_B);
+#endif
+
+#if defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
+    switch(pin) {
+    case 14:
+    	mraa_set_pininfo(board, 14, 2, "14", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    	break;
+    case 16:
+    	mraa_set_pininfo(board, 16, 3, "16", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    	break;
+    case 18:
+    	mraa_set_pininfo(board, 18, 4, "18", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    	break;
+    case 20:
+    	mraa_set_pininfo(board, 20, 5, "20", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    	break;
+    case 22:
+    	mraa_set_pininfo(board, 22, 6, "22", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    	break;
+    case 24:
+    	mraa_set_pininfo(board, 24, 7, "24", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 1, 0 });
+    	break;
+    case 25:
+    	mraa_set_pininfo(board, 25, 10, "25", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    	break;
+    case 27:
+    	mraa_set_pininfo(board, 27, 11, "27", (mraa_pincapabilities_t){ 1, 1, 1, 0, 0, 0, 0, 0 });
+    	break;
+    default:;
+    	// do nothing
+    }
 #endif
 
     mraa_gpio_context dev = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
