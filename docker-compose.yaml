@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  main:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    environment:
+      - http_proxy
+      - https_proxy
+      - no_proxy
+    command: bash -c 'source $$ZEPHYR_BASE/zephyr-env.sh && make BOARD=$$BOARD -C examples/shell'

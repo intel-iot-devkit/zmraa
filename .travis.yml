@@ -1,0 +1,24 @@
+sudo: required
+
+language: c
+
+compiler:
+  - gcc
+
+env:
+  - BOARD=arduino_101
+  - BOARD=arduino_101_sss
+  - BOARD=quark_d2000_crb
+  - BOARD=quark_se_c1000_devboard
+  - BOARD=quark_se_c1000_ss_devboard
+
+services:
+  - docker
+
+before_script:
+  - docker version
+  - docker-compose version
+  - docker-compose build
+
+script:
+  - docker-compose run -e BOARD=${BOARD} main
