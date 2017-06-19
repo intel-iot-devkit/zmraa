@@ -26,7 +26,16 @@
 #include <i2c.h>
 #include <string.h>
 #include <stdlib.h>
+
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include <pinmux.h>
+#elif defined(CONFIG_BOARD_NUCLEO_L476RG)
+#include <pinmux.h>
+#include <pinmux/stm32/pinmux_stm32.h>
+#endif
+
 #include "mraa_internal.h"
 #include "mraa_internal_types.h"
 #include "mraa/i2c.h"
@@ -46,11 +55,15 @@ mraa_i2c_init(int bus)
         return NULL;
     }
 
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
     struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         return NULL;
     }
+#endif
 
 #if defined(CONFIG_BOARD_ARDUINO_101_SSS)
     if (bus == 0) {
@@ -61,6 +74,19 @@ mraa_i2c_init(int bus)
         mraa_set_pininfo(board, 4, 14, "A4  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
         mraa_set_pininfo(board, 5, 9, "A5  ", (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 1, 1, 0 });
     }
+#endif
+
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+#if defined(CONFIG_I2C_0)
+// pinmux doesn't seem to work as expected
+// however, bus 0(1) is also available on other pins which work fine
+/*
+    struct pin_config pinconf[] = {
+        {STM32_PIN_PB8, STM32_PINMUX_FUNC_ALT_4},
+        {STM32_PIN_PB9, STM32_PINMUX_FUNC_ALT_4}};
+    stm32_setup_pins(pinconf, ARRAY_SIZE(pinconf));
+*/
+#endif
 #endif
 
     if (board->i2c_bus[bus].bus_id == -1) {

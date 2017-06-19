@@ -28,7 +28,12 @@
 #include <adc.h>
 #include <gpio.h>
 #include <i2c.h>
+
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include <pinmux.h>
+#endif
 
 /**
  * A structure representing a gpio pin.
@@ -198,6 +203,9 @@ typedef struct {
 #endif
 #if CONFIG_MRAA_UART_COUNT > 0
     mraa_pin_t uart; /**< uart module/pin */
+#endif
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+    uint32_t pinID;
 #endif
     /*@}*/
 } mraa_pininfo_t;

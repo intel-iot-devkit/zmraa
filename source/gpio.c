@@ -33,7 +33,16 @@
 #include "mraa_internal_types.h"
 #include <gpio.h>
 #include <misc/util.h>
+
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include <pinmux.h>
+#elif defined(CONFIG_BOARD_NUCLEO_L476RG)
+#include <pinmux.h>
+#include <pinmux/stm32/pinmux_stm32.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -48,7 +57,7 @@
 #define GPIO_DRV_NAME "GPIO_0"
 #endif
 static int edge_flags = 0;
-
+char stm32_drv[6];
 
 /*
  * Use container_of macro to get gpio context as per advice from
@@ -84,11 +93,24 @@ mraa_gpio_init(int pin)
         return NULL;
     }
 
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
     struct device* pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
     if (pinmux_dev == NULL) {
         printf("Failed to get binding for pinmux\n");
         return NULL;
     }
+#elif defined(CONFIG_BOARD_NUCLEO_L476RG)
+    // pinmux doesn't seem to work as expected
+    /*
+    struct device* pinmux_dev = device_get_binding(STM32_PINMUX_NAME);
+    if (pinmux_dev == NULL) {
+        printf("Failed to get binding for pinmux\n");
+        return NULL;
+    }
+    */
+#endif
 
 #if defined(CONFIG_BOARD_QUARK_D2000_CRB)
     d2k_pinmux_dev = device_get_binding(CONFIG_PINMUX_NAME);
@@ -235,6 +257,23 @@ mraa_gpio_init(int pin)
     }
 #endif
 
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+    if((pin >= 0 && pin <= 2) || 
+       (pin >= 7 && pin <= 8) ||
+       (pin >= 11 && pin <= 13) ||
+       (pin >= 16 && pin <= 18)) {
+        memcpy(stm32_drv, "GPIOA", sizeof("GPIOA"));
+    } else if((pin >= 3 && pin <= 6) ||
+            (pin == 10) ||
+            (pin >= 14 && pin <= 15) ||
+            (pin == 19)) {
+        memcpy(stm32_drv, "GPIOB", sizeof("GPIOB"));
+    } else if((pin == 9) ||
+            (pin >= 20 && pin <=21)) {
+        memcpy(stm32_drv, "GPIOC", sizeof("GPIOC"));
+    }
+#endif
+
     mraa_gpio_context dev = mraa_gpio_init_raw(board->pins[pin].gpio.pinmap);
     if (dev) {
         dev->pin = pin;
@@ -252,8 +291,13 @@ mraa_gpio_init_raw(int gpiopin)
     }
 
     dev->phy_pin = gpiopin;
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+    dev->zdev = device_get_binding(stm32_drv);
+#else
     dev->zdev = device_get_binding(GPIO_DRV_NAME);
+#endif
     if (dev->zdev == NULL) {
+        printf("Unable to initialize the driver: %s\n", GPIO_DRV_NAME);
         free(dev);
         return NULL;
     }
@@ -349,7 +393,6 @@ mraa_gpio_isr(mraa_gpio_context dev, mraa_gpio_edge_t edge_mode, void (*fptr)(vo
         return MRAA_ERROR_UNSPECIFIED;
     }
     int flags = GPIO_DIR_IN | GPIO_INT | GPIO_INT_DEBOUNCE | edge_flags;
-    // printf("isr addr = %x, args = %x\n", fptr, args);
     int ret = gpio_pin_configure(dev->zdev, dev->phy_pin, flags);
     if (ret) {
         return MRAA_ERROR_UNSPECIFIED;

@@ -31,7 +31,13 @@
 #include "mraa_internal_types.h"
 #include <device.h>
 #include <malloc.h>
+
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include <pinmux.h>
+#endif
+
 #include <sys_clock.h>
 #include <zephyr.h>
 

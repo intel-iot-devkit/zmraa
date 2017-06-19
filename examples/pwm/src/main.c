@@ -22,36 +22,40 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mraa.h"
+#include "mraa/pwm.h"
+#include "device.h"
+#include "misc/util.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+int
+main()
+{
+    mraa_init();
+    //! [Interesting]
+    mraa_pwm_context pwm;
+    pwm = mraa_pwm_init(4);
+    if (pwm == NULL) {
+        return 1;
+    }
+    mraa_pwm_period_us(pwm, 200);
+    mraa_pwm_enable(pwm, 1);
 
-#include "mraa/common.h"
-#include "mraa_internal_types.h"
+    float value = 0.0f;
 
-extern mraa_board_t* plat;
-struct device* d2k_pinmux_dev;
-
-/**
- * Takes in pin information and sets up the multiplexors.
- *
- * @param meta
- * @return mraa result type indicating success of actions.
- */
-mraa_result_t mraa_setup_mux_mapped(mraa_pin_t meta);
-
-mraa_result_t
-mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps
-#if defined(CONFIG_BOARD_NUCLEO_L476RG)
-, uint32_t pinID
-#endif
-);
-
-void mraa_set_board_config(mraa_board_t* board);
-
-
-#ifdef __cplusplus
+    while (1) {
+        value = value + 0.01f;
+        mraa_pwm_write(pwm, value);
+        k_busy_wait(50000);
+        if (value >= 1.0f) {
+            value = 0.0f;
+        }
+        //float output = mraa_pwm_read(pwm);
+        //printf("PWM value is %f\n", output);
+    }
+    //! [Interesting]
+    return 0;
 }
-#endif

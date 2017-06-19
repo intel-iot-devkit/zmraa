@@ -23,7 +23,13 @@
 
 #include <adc.h>
 #include <misc/util.h>
+
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include <pinmux.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 

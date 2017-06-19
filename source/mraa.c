@@ -37,6 +37,8 @@
 #include "quark_se_devboard.h"
 #elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include "quark_se_sss_devboard.h"
+#elif defined(CONFIG_BOARD_NUCLEO_L476RG)
+#include "stm32_nucleo_l476rg.h"
 #else
 #error Board not defined
 #endif
@@ -58,6 +60,8 @@ mraa_init()
     plat = mraa_intel_quark_se_devboard();
 #elif defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
     plat = mraa_intel_quark_se_ss_devboard();
+#elif defined(CONFIG_BOARD_NUCLEO_L476RG)
+    plat = mraa_stm32_nucleo_l476rg();
 #endif
     return plat != NULL ? MRAA_SUCCESS : MRAA_ERROR_NO_RESOURCES;
 }
@@ -418,7 +422,11 @@ mraa_get_sub_platform_index(int pin_or_bus)
 
 // Internal functions
 mraa_result_t
-mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps)
+mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+, uint32_t pinID
+#endif
+)
 {
     mraa_pininfo_t* pin_info = &board->pins[mraa_pin];
     pin_info->gpio.pinmap = zephyr_pin;
@@ -435,6 +443,9 @@ mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, 
     // char array ends with a null terminator
     pin_info->name[MRAA_PIN_NAME_SIZE - 1] = '\0';
     pin_info->capabilites = caps;
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+    pin_info->pinID = pinID;
+#endif
     return MRAA_SUCCESS;
 }
 

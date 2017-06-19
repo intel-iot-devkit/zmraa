@@ -29,7 +29,16 @@
 #include "mraa_internal_types.h"
 #include "version.h"
 #include <misc/util.h>
+
+#if defined(CONFIG_BOARD_QUARK_D2000_CRB) || defined(CONFIG_BOARD_ARDUINO_101) || \
+    defined(CONFIG_BOARD_ARDUINO_101_SSS) || defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD) || \
+    defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD_SS)
 #include <pinmux.h>
+#elif defined(CONFIG_BOARD_NUCLEO_L476RG)
+#include <pinmux.h>
+#include <pinmux/stm32/pinmux_stm32.h>
+#endif
+
 #include <pwm.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,12 +118,62 @@ mraa_pwm_init(int pin)
     mraa_pwm_context dev = (mraa_pwm_context) malloc(sizeof(struct _pwm));
     dev->pin = pin;
     dev->phy_pin = board->pins[pin].pwm.pinmap;
+#if defined(CONFIG_BOARD_NUCLEO_L476RG)
+    struct pin_config pinconf[] = {
+        {board->pins[pin].pinID, STM32_PINMUX_FUNC_ALT_1}};
+    stm32_setup_pins(pinconf, ARRAY_SIZE(pinconf));
+
+    int pwm_port = 0;
+
+    switch(pin) {
+        case 16:
+        case 13:
+            dev->phy_pin = 1;pwm_port = 2;
+        break;
+        case 17:
+        case 3:
+            dev->phy_pin = 2;pwm_port = 2;
+        break;
+        case 6:
+        case 1:
+            dev->phy_pin = 3;pwm_port = 2;
+        break;
+        case 0:
+            dev->phy_pin = 4;pwm_port = 2;
+        break;
+        case 8:
+            dev->phy_pin = 2;pwm_port = 1;
+        break;
+        case 7:
+            dev->phy_pin = 1;pwm_port = 1;
+        break;
+        case 2:
+            dev->phy_pin = 3;pwm_port = 1;
+        break;
+        default:
+            printf("Pin can't be configured as PWM as of now\n");
+            return NULL;
+    }
+
+    if(pwm_port == 1)
+        dev->zdev = device_get_binding("PWM_1");
+    else if(pwm_port == 2)
+        dev->zdev = device_get_binding("PWM_2");
+    else if(pwm_port == 3)
+        dev->zdev = device_get_binding("PWM_3");
+
+    if (dev->zdev == NULL) {
+        printf("Unable to get PWM binding\n");
+        return NULL;
+    }
+#elif
     dev->zdev = device_get_binding("PWM_0");
     if (dev->zdev == NULL)
         return NULL;
+#endif
     dev->period = MAX_PERIOD;
     dev->duty_percentage = DEFAULT_DUTY_CYCLE;
-    printf("successfully completed init\n");
+
     return dev;
 }
 
@@ -143,6 +202,11 @@ mraa_pwm_write(mraa_pwm_context dev, float percentage)
     uint32_t on_time = (uint32_t)(percentage * dev->period);
     uint32_t off_time = dev->period - on_time;
     if (pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, off_time) != 0) {
+        return MRAA_ERROR_UNSPECIFIED;
+    }
+#elif defined(CONFIG_PWM_STM32)
+    uint32_t pulse = (uint32_t)(percentage * dev->period);
+    if(pwm_pin_set_cycles(dev->zdev, dev->phy_pin, dev->period, pulse) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
 #endif

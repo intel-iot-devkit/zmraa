@@ -16,12 +16,14 @@
 # limitations under the License.
 #
 
+
 config  MRAA
         bool
         prompt "Mraa Support"
         default n
         select PINMUX
-        select PINMUX_QMSI
+        select PINMUX_STM32 if BOARD_NUCLEO_L476RG
+        select PINMUX_QMSI if BOARD_ARDUINO_101 || BOARD_ARDUINO_101_SSS || BOARD_INTEL_QUARK_D2K_CRB || BOARD_QUARK_SE_C1000_DEVBOARD || BOARD_QUARK_SE_C1000_DEVBOARD_SS 
         help
           This option enables the mraa lib
 

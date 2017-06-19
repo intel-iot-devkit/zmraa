@@ -1,6 +1,6 @@
 /*
- * Author: Thomas Ingleby <thomas.c.ingleby@intel.com>
- * Copyright (c) 2014 Intel Corporation.
+ * Author: Abhishek Malik <abhishek.malik@intel.com>
+ * Copyright (c) 2017 Intel Corporation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -21,36 +21,17 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 #pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "mraa/common.h"
 #include "mraa_internal_types.h"
 
-extern mraa_board_t* plat;
-struct device* d2k_pinmux_dev;
 
-/**
- * Takes in pin information and sets up the multiplexors.
- *
- * @param meta
- * @return mraa result type indicating success of actions.
- */
-mraa_result_t mraa_setup_mux_mapped(mraa_pin_t meta);
-
-mraa_result_t
-mraa_set_pininfo(mraa_board_t* board, int mraa_pin, int zephyr_pin, char* name, mraa_pincapabilities_t caps
-#if defined(CONFIG_BOARD_NUCLEO_L476RG)
-, uint32_t pinID
-#endif
-);
-
-void mraa_set_board_config(mraa_board_t* board);
-
+mraa_board_t*
+mraa_stm32_nucleo_l476rg();
 
 #ifdef __cplusplus
 }
