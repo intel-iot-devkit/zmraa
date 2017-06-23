@@ -118,6 +118,7 @@ mraa_pwm_init(int pin)
     mraa_pwm_context dev = (mraa_pwm_context) malloc(sizeof(struct _pwm));
     dev->pin = pin;
     dev->phy_pin = board->pins[pin].pwm.pinmap;
+
 #if defined(CONFIG_BOARD_NUCLEO_L476RG)
     struct pin_config pinconf[] = {
         {board->pins[pin].pinID, STM32_PINMUX_FUNC_ALT_1}};
@@ -166,7 +167,7 @@ mraa_pwm_init(int pin)
         printf("Unable to get PWM binding\n");
         return NULL;
     }
-#elif
+#else
     dev->zdev = device_get_binding("PWM_0");
     if (dev->zdev == NULL)
         return NULL;
@@ -194,8 +195,8 @@ mraa_pwm_write(mraa_pwm_context dev, float percentage)
     dev->duty_percentage = percentage;
 
 #if defined(CONFIG_PWM_QMSI)
-    uint8_t pwm_duty_val = (uint8_t)(100 * percentage);
-    if (pwm_pin_set_duty_cycle(dev->zdev, dev->phy_pin, pwm_duty_val) != 0) {
+    uint32_t pulse = (uint32_t)(percentage * dev->period);
+    if (pwm_pin_set_cycles(dev->zdev, dev->phy_pin, dev->period, pulse) != 0) {
         return MRAA_ERROR_UNSPECIFIED;
     }
 #elif defined(CONFIG_PWM_DW)
@@ -242,23 +243,6 @@ mraa_result_t
 mraa_pwm_period_us(mraa_pwm_context dev, int us)
 {
     dev->period = 32 * us;
-#if defined(CONFIG_PWM_QMSI)
-/**
- * the qmsi function deals in us so we don't need the
- * number of cycles for this calculation.
- * API CHANGES FROM 1.4 TO 1.5
- */
-#if KERNELVERSION >= 0x1050000
-    if (pwm_pin_set_period(dev->zdev, dev->phy_pin, us) != 0) {
-        return MRAA_ERROR_UNSPECIFIED;
-    }
-#endif
-#elif defined(CONFIG_PWM_DW)
-    // nothing to do as of now
-    // need to figure out if they put in a function for the
-    // dw driver
-    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
-#endif
     return MRAA_SUCCESS;
 }
 
@@ -282,15 +266,9 @@ mraa_pwm_pulsewidth_us(mraa_pwm_context dev, int us)
         // the pulsewidth cannot be greater than the period
         return MRAA_ERROR_UNSPECIFIED;
     }
-// API CHANGES FROM 1.4 TO 1.5
-#if KERNELVERSION >= 0x1050000
-    int ret = pwm_pin_set_values(dev->zdev, dev->phy_pin, 0, on_time);
-#elif KERNELVERSION <= 0x1040000
-    int ret = pwm_pin_set_values(dev->zdev, dev->phy_pin, on_time, dev->period - on_time);
-#endif
-    if (ret != 0) {
+
+    if(mraa_pwm_write(dev, (float)on_time/dev->period) != MRAA_SUCCESS)
         return MRAA_ERROR_UNSPECIFIED;
-    }
 
     return MRAA_SUCCESS;
 }

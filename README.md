@@ -82,8 +82,22 @@ cd $ZEPHYR_BASE
 git am ext/lib/mraa/zmraa.patch
 ```
 
+ZMRAA Examples Note: Please change pin numbers accordingly based on platform.
+
+ZMRAA AIO Example
+-----------------
+The ZMRAA AIO example needs special care when running on D2000. Please see following for more info
+
+prj.conf AIO setting for D2000:
+CONFIG_ADC_QMSI=y
+CONFIG_ADC_QMSI_SS=n
+
+prj.conf AIO setting for C1000_SS and A101_SS:
+CONFIG_ADC_QMSI=n
+CONFIG_ADC_QMSI_SS=y
+
 ZMRAA Shell Example
-------------------
+-------------------
 The ZMRAA shell example creates a simple Zephyr shell which provides a command set for interacting with ZMRAA GPIOs and I2C busses.  The ZMRAA shell is available on all supported board targets.
 
 **Board targets:**

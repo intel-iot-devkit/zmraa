@@ -21,7 +21,7 @@ RUN apt-get -y update && \
 RUN wget -q https://github.com/zephyrproject-rtos/meta-zephyr-sdk/releases/download/0.9.1/zephyr-sdk-0.9.1-setup.run && bash zephyr-sdk-0.9.1-setup.run -- -d $ZEPHYR_SDK_INSTALL_DIR -y
 
 # Zephyr kernel
-RUN git clone http://github.com/zephyrproject-rtos/zephyr $ZEPHYR_BASE && cd $ZEPHYR_BASE && git checkout tags/v1.7.0
+RUN git clone http://github.com/zephyrproject-rtos/zephyr $ZEPHYR_BASE && cd $ZEPHYR_BASE && git checkout tags/v1.8.0
 
 # Set Workdir
 WORKDIR /work/zmraa

@@ -41,6 +41,8 @@
 #define UART_DEVICE "UART_1"
 #elif defined(CONFIG_BOARD_QUARK_D2000_CRB)
 #define UART_DEVICE "UART_0"
+#elif  defined(CONFIG_BOARD_QUARK_SE_C1000_DEVBOARD)
+#define UART_DEVICE "UART_1"
 #endif
 
 #if defined(CONFIG_STDOUT_CONSOLE)

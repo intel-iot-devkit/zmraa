@@ -30,6 +30,7 @@
 #include "mraa/pwm.h"
 #include "device.h"
 #include "misc/util.h"
+#include <misc/printk.h>
 
 int
 main()
@@ -37,8 +38,9 @@ main()
     mraa_init();
     //! [Interesting]
     mraa_pwm_context pwm;
-    pwm = mraa_pwm_init(4);
+    pwm = mraa_pwm_init(25);
     if (pwm == NULL) {
+        printk("Unable to init PWM\n");
         return 1;
     }
     mraa_pwm_period_us(pwm, 200);
@@ -54,7 +56,7 @@ main()
             value = 0.0f;
         }
         //float output = mraa_pwm_read(pwm);
-        //printf("PWM value is %f\n", output);
+        printf("PWM value is %f\n", value);
     }
     //! [Interesting]
     return 0;

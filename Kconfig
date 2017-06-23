@@ -48,9 +48,12 @@ config  MRAA_AIO
 config  MRAA_I2C
         bool
         prompt "Mraa I2C function support"
+        select GPIO_QMSI if BOARD_ARDUINO_101 || BOARD_QUARK_SE_C1000_DEVBOARD
+        select GPIO_QMSI_SS if BOARD_ARDUINO_101_SSS || BOARD_QUARK_SE_C1000_DEVBOARD_SS
+        select GPIO if BOARD_INTEL_QUARK_D2K_CRB || BOARD_NUCLEO_L476RG
+        select MRAA_GPIO
         select I2C
         select MRAA
-        select MRAA_GPIO
         default n
         help
           This option enables support for MRAA I2C

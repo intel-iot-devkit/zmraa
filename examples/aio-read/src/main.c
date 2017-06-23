@@ -60,7 +60,7 @@ main(void)
         return;
     }
     // Initializing the MRAA AIO layer
-    mraa_aio_context dev = mraa_aio_init(0);
+    mraa_aio_context dev = mraa_aio_init(92);
     if (dev == NULL) {
         printf("Unable to initialize AIO\n");
         return;
