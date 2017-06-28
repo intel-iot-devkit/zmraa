@@ -2,6 +2,7 @@ ZMRAA is an implementation of the MRAA API for Zephyr project.
 
 Releases
 -----------------
+* v1.2.0 - Support for Zephyr 1.8. Added STM32 Nucleo L476RG.
 * v1.1.0 - Support for Zephyr 1.7.  Added Quark SE C1000 Development board
   support.
 * v1.0.0 - Initial release of ZMRAA targeting Zephyr 1.6
@@ -12,6 +13,7 @@ Supported Devices
 * Arduino 101
 * Quark D2000 CRB
 * Quark SE C1000 Development Board
+* STM32 Nucleo L476RG
 
 Supported APIs
 -----------------
@@ -73,7 +75,7 @@ Adding ZMRAA to Zephyr
 
 ```
 cd zephyr/ext/lib
-git clone https://github.com/intel-iot-devkit/zmraa.git mraa
+git clone https://github.com/intel-iot-devkit/install.git mraa
 ```
 
 Then you need to apply [zmraa.patch](zmraa.patch) to add the configuration entries
