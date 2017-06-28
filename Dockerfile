@@ -33,4 +33,4 @@ COPY . .
 RUN ln -s /work/zmraa $ZEPHYR_BASE/ext/lib/mraa
 
 # Patch Zephyr ext Kbuild to include ZMRAA
-RUN patch -d $ZEPHYR_BASE -p1 < zmraa.patch
+RUN patch -d $ZEPHYR_BASE -p1 < install.patch
